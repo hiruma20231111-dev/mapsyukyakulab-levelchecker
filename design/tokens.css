@@ -1,0 +1,58 @@
+/* =====================================================================
+   マップ集客ラボ v2 — デザイントークン（唯一の"見た目の源"）
+   direction v0.2 確定分。globals.css はこのファイルを @import して使う。
+   ※ maplab 本体は「ライト・モバイル」の単一ルック。ここはアプリのトークン。
+   ===================================================================== */
+:root{
+  /* ---- ニュートラル / 面 ---- */
+  --ink:#14202a;          /* 本文 */
+  --muted:#5d7178;        /* 補足・キャプション */
+  --faint:#8798a0;        /* さらに弱い注記 */
+  --line:#e5ebf1;         /* 罫線・カード枠 */
+  --bg:#f4f7fa;           /* 画面地 */
+  --surface:#ffffff;      /* カード */
+  --panel:#f6faf9;        /* 淡い面（AIカード地など） */
+
+  /* ---- アクセント（主役＝ティール）---- */
+  --accent:#0e9f8e;       /* ボタン・選択・強調 */
+  --accent-strong:#0b7d70;/* グラデ濃側 */
+  --accent-deep:#0b6e63;  /* 文字上のティール・リンク（白地でAA） */
+  --accent-soft:#e7f6f3;  /* 選択の面・淡いバッジ地 */
+  --navy:#1e3a57;         /* 見出し・ヒーロー深部 */
+
+  /* ---- セマンティック（注意色。乱用しない）---- */
+  --warn:#dc9a34;         /* 中間評価・残日数注意 */
+  --danger:#e0574a;       /* 警告・エラー（旧pin。装飾に使わない） */
+
+  /* ---- Google 4色 ＝「集客の4つの力」識別色 ---- */
+  --g-blue:#4285f4;       /* display = 見つかる */
+  --g-yellow:#fbbc05;     /* contact = 選ばれる */
+  --g-green:#34a853;      /* visit   = 来店 */
+  --g-red:#ea4335;        /* aio     = AI検索 */
+
+  /* ---- グラデ ---- */
+  --grad-teal:linear-gradient(135deg,#12b39c,#0b7d70);
+  --grad-hero:linear-gradient(155deg,#0d2a46 0%,#0e6f7e 58%,#13b8a0 128%);
+
+  /* ---- 影（2段だけ）---- */
+  --sh1:0 2px 12px rgba(18,50,79,.06);   /* カード標準 */
+  --sh2:0 14px 36px rgba(11,60,79,.16);  /* ヒーロー・浮遊要素のみ */
+
+  /* ---- 余白（4px base）---- */
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:20px; --sp-6:24px; --sp-8:32px;
+
+  /* ---- 角丸 ---- */
+  --r-sm:10px; --r-md:13px; --r-card:16px; --r-pill:999px;
+
+  /* ---- タイポ ---- */
+  --font:"Hiragino Kaku Gothic ProN","Hiragino Sans","Segoe UI","Meiryo",system-ui,sans-serif;
+  --font-mono:"SFMono-Regular",Consolas,"Roboto Mono",ui-monospace,monospace;
+  --fs:1;                 /* 文字サイズ倍率（小0.9 / 中1 / 大1.18）本文系にだけ効かせる */
+  --t-display:28px; --t-h1:22px; --t-h2:16px; --t-body:15px; --t-small:13px; --t-micro:11.5px;
+  --w-regular:400; --w-med:500; --w-bold:800; --w-black:900;
+
+  /* ---- モーション ---- */
+  --dur-fast:160ms;       /* 押下・状態変化 */
+  --dur-base:220ms;       /* 出現 */
+  --ease:cubic-bezier(.2,.7,.2,1);
+}
