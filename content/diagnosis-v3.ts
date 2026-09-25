@@ -60,7 +60,7 @@ export const DIAG_CATEGORIES: readonly DiagCategory[] = [
     items: [
       { key: "owner", label: "オーナー登録", type: "toggle", criteria: "オーナー登録あり", weight: 10, impact: { rank: 3, cvr: 1, trust: 3 }, toggle: YN("登録あり", "未登録") },
       { key: "name", label: "店舗名", type: "toggle", criteria: "実店舗の表記と一致", weight: 1, impact: { rank: 2, cvr: 1, trust: 3 }, toggle: YN("一致", "不一致") },
-      { key: "nameEn", label: "英語ビジネス名", type: "toggle", criteria: "英語ビジネス名の設定あり", weight: 3, impact: { rank: 1, cvr: 1, trust: 1 }, toggle: YN() },
+      { key: "nap", label: "NAP一致度", type: "toggle", criteria: "他媒体と店名・住所・電話が一致", weight: 3, impact: { rank: 3, cvr: 1, trust: 3 }, toggle: YN("一致", "不一致") },
       { key: "address", label: "住所", type: "toggle", criteria: "正確に登録", weight: 2, impact: { rank: 3, cvr: 2, trust: 3 }, toggle: YN("正確", "不備あり") },
       { key: "phone", label: "電話番号", type: "toggle", criteria: "記載あり", weight: 5, impact: { rank: 1, cvr: 2, trust: 2 }, toggle: YN() },
       { key: "hours", label: "営業時間", type: "toggle", criteria: "最新に更新", weight: 5, impact: { rank: 1, cvr: 3, trust: 2 }, toggle: YN("最新", "未更新") },

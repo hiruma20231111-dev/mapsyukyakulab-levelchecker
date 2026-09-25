@@ -18,7 +18,7 @@ describe("rankOf", () => {
 
 // 全項目を最高段階(5相当)に。toggle=1 / stage5=5 / numeric=段階5に入る値。
 const full: V3Answers = {
-  basic: { owner: 1, name: 1, nameEn: 1, address: 1, phone: 1, hours: 1, website: 1, https: 1, utm: 1 },
+  basic: { owner: 1, name: 1, nap: 1, address: 1, phone: 1, hours: 1, website: 1, https: 1, utm: 1 },
   content: { description: 700, descEn: 1, logo: 1, mainCat: 1, subCat: 1, attributes: 1 },
   photo: { count: 60, ownerPhotos: 25, fresh: 5 },
   review: { rating: 4.8, count: 150, reply: 10, latest: 5, qa: 1 },
