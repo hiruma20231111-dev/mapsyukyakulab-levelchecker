@@ -198,3 +198,10 @@
   .pr{ max-width:none; margin:0; padding:0; }
   .pr-cats{ grid-template-columns:1fr 1fr; }
 }
+
+/* 印刷CTA：LINE QR併記 */
+.pr-cta-box{ display:flex; align-items:center; gap:16px; }
+.pr-cta-text{ flex:1; }
+.pr-cta-qr{ flex:0 0 auto; text-align:center; }
+.pr-cta-qr img{ width:92px; height:92px; display:block; background:#fff; border-radius:8px; }
+.pr-cta-qr span{ font-size:9px; font-weight:800; color:#06c755; display:block; margin-top:3px; line-height:1.3; }

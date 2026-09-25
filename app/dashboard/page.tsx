@@ -17,7 +17,7 @@ export default async function DashboardPage() {
   ]);
   return (
     <main className="app">
-      <SalesDashboard salesName={sales.name} initialLeads={leads} monthGoal={goal} ym={ym} />
+      <SalesDashboard salesName={sales.name} initialLeads={leads} monthGoal={goal} ym={ym} initialLineUrl={sales.lineUrl || ""} />
     </main>
   );
 }

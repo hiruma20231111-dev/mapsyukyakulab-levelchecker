@@ -3,7 +3,7 @@ import type { ResultView } from "./build";
 
 const JUDGE_MARK: Record<string, string> = { o: "○", t: "△", x: "×" };
 
-export function PrintReport({ data, dateStr }: { data: ResultView; dateStr: string }) {
+export function PrintReport({ data, dateStr, lineUrl, lineQr }: { data: ResultView; dateStr: string; lineUrl?: string; lineQr?: string }) {
   return (
     <div className="pr">
       <div className="pr-mast">
@@ -67,8 +67,16 @@ export function PrintReport({ data, dateStr }: { data: ResultView; dateStr: stri
 
       <div className="pr-foot">
         <div className="pr-cta-box">
-          <b>次の一歩：MEO無料トライアル</b>
-          <span>この診断結果をもとに、集客改善を専門スタッフが一緒に進めます。担当者またはLINEからお気軽にお問い合わせください。</span>
+          <div className="pr-cta-text">
+            <b>次の一歩：MEO無料トライアル</b>
+            <span>この診断結果をもとに、集客改善を専門スタッフが一緒に進めます。{lineQr ? "右のQRコードからLINEで友だち追加して、お気軽にお問い合わせください。" : lineUrl ? `LINE（${lineUrl}）からお気軽にお問い合わせください。` : "担当者までお気軽にお問い合わせください。"}</span>
+          </div>
+          {lineQr && (
+            <div className="pr-cta-qr">
+              <img src={lineQr} alt="LINE友だち追加QR" />
+              <span>LINEで<br />無料トライアル</span>
+            </div>
+          )}
         </div>
         <div className="pr-foot-brand">マップ集客ラボ レベルチェッカー｜{dateStr}</div>
       </div>

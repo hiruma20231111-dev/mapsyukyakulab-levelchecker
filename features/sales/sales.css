@@ -53,3 +53,12 @@
 .sd-modal-btns{ display:flex; gap:8px; }
 .sd-modal-btns .btn{ flex:1; border:0; border-radius:10px; padding:11px; font-size:13px; font-weight:900; color:#fff; background:var(--grad-teal); cursor:pointer; }
 .sd-modal-btns .btn.ghost{ background:var(--surface); color:var(--accent-deep); border:1.5px solid var(--accent); }
+
+/* 営業本人のLINE設定 */
+.sd-line{ background:var(--surface); border:1px solid var(--line); border-radius:var(--r-card); padding:12px 14px; box-shadow:var(--sh1); margin:0 0 14px; }
+.sd-line-lab{ display:flex; align-items:center; gap:6px; font-size:11.5px; font-weight:800; color:var(--accent-deep); margin:0 0 8px; }
+.sd-line-row{ display:flex; gap:8px; }
+.sd-line-in{ flex:1; border:1px solid var(--line); border-radius:8px; padding:9px 11px; font-size:13px; font-family:inherit; color:var(--ink); }
+.sd-line-btn{ border:0; border-radius:8px; background:#06c755; color:#fff; font-weight:900; font-size:13px; padding:9px 16px; cursor:pointer; font-family:inherit; }
+.sd-line-note{ font-size:10.5px; color:var(--muted); margin-top:7px; }
+.sd-line-ok{ color:var(--accent-deep); font-weight:800; }

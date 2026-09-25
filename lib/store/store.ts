@@ -113,7 +113,7 @@ export async function listSales(): Promise<SalesMember[]> {
   return [...salesMem.values()].sort((a, b) => a.createdAt - b.createdAt);
 }
 
-export async function updateSales(id: string, patch: Partial<Pick<SalesMember, "name" | "active">>): Promise<SalesMember | null> {
+export async function updateSales(id: string, patch: Partial<Pick<SalesMember, "name" | "active" | "lineUrl">>): Promise<SalesMember | null> {
   const cur = await getSales(id);
   if (!cur) return null;
   const next: SalesMember = { ...cur, ...patch };
@@ -358,10 +358,17 @@ export async function setSettings(patch: Partial<AppSettings>): Promise<AppSetti
   return next;
 }
 
-/** LINE 友だち追加URL は環境変数のフォールバックも見る。 */
+/** 全体のLINE 友だち追加URL（フォールバック）。設定→環境変数の順。 */
 export async function getLineAddUrl(): Promise<string> {
   const s = await getSettings();
   return s.lineAddUrl || process.env.LINE_ADD_URL || "";
+}
+
+/** リードのLINE URLを解決：発行した営業のLINE → 全体設定 → 環境変数。 */
+export async function resolveLineUrlForSales(salesId: string): Promise<string> {
+  const sales = salesId ? await getSales(salesId) : null;
+  if (sales?.lineUrl) return sales.lineUrl;
+  return getLineAddUrl();
 }
 
 // =====================================================================

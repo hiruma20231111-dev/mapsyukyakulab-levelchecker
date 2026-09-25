@@ -33,6 +33,8 @@ export interface SalesMember {
   token: string;
   role: "sales";
   active: boolean;
+  /** この営業のLINE友だち追加URL。発行した診断の無料トライアルCTA/QRに使う。 */
+  lineUrl?: string;
   createdAt: number;
 }
 

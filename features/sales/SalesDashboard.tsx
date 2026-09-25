@@ -12,15 +12,28 @@ export function SalesDashboard({
   initialLeads,
   monthGoal,
   ym,
+  initialLineUrl,
 }: {
   salesName: string;
   initialLeads: Lead[];
   monthGoal: number;
   ym: string;
+  initialLineUrl: string;
 }) {
   const [leads, setLeads] = useState<Lead[]>(initialLeads);
   const [qr, setQr] = useState<{ url: string; png: string; name: string } | null>(null);
   const [busy, setBusy] = useState<string>("");
+  const [lineUrl, setLineUrl] = useState(initialLineUrl);
+  const [lineSaved, setLineSaved] = useState("");
+
+  async function saveLine() {
+    const res = await fetch("/api/me", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ lineUrl }),
+    });
+    if (res.ok) { setLineSaved("保存しました"); setTimeout(() => setLineSaved(""), 1800); }
+  }
 
   const monthCount = useMemo(() => countIssuedInMonth(leads, ym), [leads, ym]);
   const rate = useMemo(() => trialRate(leads), [leads]);
@@ -82,6 +95,17 @@ export function SalesDashboard({
           <div className="sd-card-lab">トライアル実施率</div>
           <div className="sd-card-num sd-teal">{rate}<small>%</small></div>
           <div className="sd-card-sub">全{leads.length}件のうち導入＋本契約</div>
+        </div>
+      </div>
+
+      <div className="sd-line">
+        <div className="sd-line-lab"><Icon name="chat" size={14} />あなたのLINE友だち追加URL</div>
+        <div className="sd-line-row">
+          <input className="sd-line-in" value={lineUrl} onChange={(e) => setLineUrl(e.target.value)} placeholder="https://lin.ee/xxxxxxx" />
+          <button className="sd-line-btn" onClick={saveLine}>保存</button>
+        </div>
+        <div className="sd-line-note">
+          {lineSaved ? <span className="sd-line-ok">✓ {lineSaved}</span> : "発行した診断結果に、このLINEの「無料トライアル申込」ボタンとPDFのQRが表示されます。"}
         </div>
       </div>
 

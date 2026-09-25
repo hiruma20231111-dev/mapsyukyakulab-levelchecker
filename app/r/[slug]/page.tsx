@@ -1,5 +1,5 @@
 // お客様が受け取る診断結果ページ（キー不要で /r/<slug> を開ける）。
-import { getLeadBySlug, recordView, getLineAddUrl } from "@/lib/store/store";
+import { getLeadBySlug, recordView, resolveLineUrlForSales } from "@/lib/store/store";
 import { buildResultView } from "@/features/result";
 import { ResultScreen } from "@/features/result";
 
@@ -19,7 +19,7 @@ export default async function ResultPage({ params }: { params: { slug: string } 
     );
   }
   recordView(params.slug).catch(() => {});
-  const lineUrl = await getLineAddUrl();
+  const lineUrl = await resolveLineUrlForSales(lead.salesId);
   const data = buildResultView(lead.storeName, lead.answers, {
     query: lead.query,
     weights: lead.weights,
