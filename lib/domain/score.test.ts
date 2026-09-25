@@ -18,18 +18,18 @@ describe("rankOf", () => {
 
 // 全項目を最高段階(5相当)に。toggle=1 / stage5=5 / numeric=段階5に入る値。
 const full: V3Answers = {
-  basic: { owner: 1, name: 1, address: 1, phone: 1, hours: 1, website: 1, https: 1, nap: 1 },
+  basic: { owner: 1, name: 1, nameEn: 1, address: 1, phone: 1, hours: 1, website: 1, https: 1, utm: 1 },
   content: { description: 700, descEn: 1, logo: 1, mainCat: 1, subCat: 1, attributes: 1 },
   photo: { count: 60, ownerPhotos: 25, fresh: 5 },
   review: { rating: 4.8, count: 150, reply: 10, latest: 5, qa: 1 },
-  post: { frequency: 5 },
+  post: { count: 150, latest: 5 },
 };
 
 describe("scoreV3 — 満点", () => {
   const r = scoreV3(full);
   it("各カテゴリが配点満点・総合100・ランクS", () => {
     const pts = Object.fromEntries(r.categories.map((c) => [c.key, c.points]));
-    expect(pts).toEqual({ basic: 25, content: 20, photo: 15, review: 25, post: 15 });
+    expect(pts).toEqual({ basic: 30, content: 20, photo: 15, review: 20, post: 15 });
     expect(r.total).toBe(100);
     expect(r.max).toBe(100);
     expect(r.rank).toBe("S");
@@ -48,10 +48,15 @@ describe("scoreV3 — 全0/未回答", () => {
 
 describe("線形換算（段階→割合）", () => {
   it("stage5項目を段階4に→75%（回答済み1項目のみ）", () => {
-    const r = scoreV3({ post: { frequency: 4 } });
+    const r = scoreV3({ post: { latest: 4 } });
     const post = r.categories.find((c) => c.key === "post")!;
     expect(post.ratio).toBeCloseTo(0.75, 5);
     expect(post.points).toBe(Math.round(0.75 * 15));
+  });
+  it("投稿数のしきい値：累計51回→段階4→75%", () => {
+    const r = scoreV3({ post: { count: 51 } });
+    const post = r.categories.find((c) => c.key === "post")!;
+    expect(post.ratio).toBeCloseTo(0.75, 5);
   });
   it("numeric項目のしきい値：写真20枚→段階4→75%", () => {
     const r = scoreV3({ photo: { count: 20 } });

@@ -56,16 +56,17 @@ export const DIAG_CATEGORIES: readonly DiagCategory[] = [
   {
     key: "basic",
     name: "基本情報",
-    max: 25,
+    max: 30,
     items: [
-      { key: "owner", label: "オーナー登録", type: "toggle", criteria: "オーナー登録あり", weight: 2, impact: { rank: 3, cvr: 1, trust: 3 }, toggle: YN("登録あり", "未登録") },
+      { key: "owner", label: "オーナー登録", type: "toggle", criteria: "オーナー登録あり", weight: 10, impact: { rank: 3, cvr: 1, trust: 3 }, toggle: YN("登録あり", "未登録") },
       { key: "name", label: "店舗名", type: "toggle", criteria: "実店舗の表記と一致", weight: 1, impact: { rank: 2, cvr: 1, trust: 3 }, toggle: YN("一致", "不一致") },
-      { key: "address", label: "住所", type: "toggle", criteria: "正確に登録", weight: 1, impact: { rank: 3, cvr: 2, trust: 3 }, toggle: YN("正確", "不備あり") },
-      { key: "phone", label: "電話番号", type: "toggle", criteria: "記載あり", weight: 1, impact: { rank: 1, cvr: 2, trust: 2 }, toggle: YN() },
-      { key: "hours", label: "営業時間", type: "toggle", criteria: "最新に更新", weight: 1, impact: { rank: 1, cvr: 3, trust: 2 }, toggle: YN("最新", "未更新") },
-      { key: "website", label: "ウェブサイト", type: "toggle", criteria: "URL登録あり", weight: 1, impact: { rank: 2, cvr: 2, trust: 1 }, toggle: YN() },
+      { key: "nameEn", label: "英語ビジネス名", type: "toggle", criteria: "英語ビジネス名の設定あり", weight: 3, impact: { rank: 1, cvr: 1, trust: 1 }, toggle: YN() },
+      { key: "address", label: "住所", type: "toggle", criteria: "正確に登録", weight: 2, impact: { rank: 3, cvr: 2, trust: 3 }, toggle: YN("正確", "不備あり") },
+      { key: "phone", label: "電話番号", type: "toggle", criteria: "記載あり", weight: 5, impact: { rank: 1, cvr: 2, trust: 2 }, toggle: YN() },
+      { key: "hours", label: "営業時間", type: "toggle", criteria: "最新に更新", weight: 5, impact: { rank: 1, cvr: 3, trust: 2 }, toggle: YN("最新", "未更新") },
+      { key: "website", label: "ウェブサイト", type: "toggle", criteria: "URL登録あり", weight: 2, impact: { rank: 2, cvr: 2, trust: 1 }, toggle: YN() },
       { key: "https", label: "HTTPS対応", type: "toggle", criteria: "サイトがHTTPS対応（サイト無しは対象外）", weight: 1, impact: { rank: 1, cvr: 1, trust: 1 }, toggle: YN("対応", "非対応"), dependsOnOff: "website" },
-      { key: "nap", label: "NAP一致度", type: "toggle", criteria: "他媒体と店名・住所・電話が一致", weight: 1.5, impact: { rank: 3, cvr: 1, trust: 3 }, toggle: YN("一致", "不一致") },
+      { key: "utm", label: "UTMパラメータ", type: "toggle", criteria: "サイトURLに計測用UTMパラメータを設定（サイト無しは対象外）", weight: 1, impact: { rank: 0, cvr: 1, trust: 0 }, toggle: YN(), dependsOnOff: "website" },
     ],
   },
   {
@@ -73,7 +74,7 @@ export const DIAG_CATEGORIES: readonly DiagCategory[] = [
     name: "コンテンツ",
     max: 20,
     items: [
-      { key: "description", label: "店舗の説明文（文字数）", type: "numeric", input: "paste", unit: "字", weight: 2, impact: { rank: 3, cvr: 2, trust: 1 },
+      { key: "description", label: "店舗の説明文（文字数）", type: "numeric", input: "paste", unit: "字", weight: 6, impact: { rank: 3, cvr: 2, trust: 1 },
         criteria: "上限750字に対する充実度（未設定＝0点）",
         stages: [
           { label: "未設定", min: 0 },
@@ -82,11 +83,11 @@ export const DIAG_CATEGORIES: readonly DiagCategory[] = [
           { label: "500〜649字（基準）", min: 500 },
           { label: "650字以上", min: 650 },
         ] },
-      { key: "descEn", label: "店舗の説明文（英語）", type: "toggle", criteria: "説明文に英語が含まれる", weight: 0.5, impact: { rank: 1, cvr: 1, trust: 0 }, toggle: YN("あり", "なし") },
-      { key: "logo", label: "ロゴ", type: "toggle", criteria: "設定あり", weight: 0.8, impact: { rank: 0, cvr: 2, trust: 1 }, toggle: YN() },
-      { key: "mainCat", label: "メインカテゴリ", type: "toggle", criteria: "正確に設定", weight: 1.5, impact: { rank: 3, cvr: 1, trust: 1 }, toggle: YN("正確", "不適切") },
-      { key: "subCat", label: "サブカテゴリ", type: "toggle", criteria: "設定あり", weight: 1, impact: { rank: 2, cvr: 1, trust: 1 }, toggle: YN() },
-      { key: "attributes", label: "店舗の特徴・属性", type: "toggle", criteria: "設定あり", weight: 0.8, impact: { rank: 1, cvr: 2, trust: 1 }, toggle: YN() },
+      { key: "descEn", label: "店舗の説明文（英語）", type: "toggle", criteria: "説明文に英語が含まれる", weight: 3, impact: { rank: 1, cvr: 1, trust: 0 }, toggle: YN("あり", "なし") },
+      { key: "logo", label: "ロゴ", type: "toggle", criteria: "設定あり", weight: 2, impact: { rank: 0, cvr: 2, trust: 1 }, toggle: YN() },
+      { key: "mainCat", label: "メインカテゴリ", type: "toggle", criteria: "正確に設定", weight: 2, impact: { rank: 3, cvr: 1, trust: 1 }, toggle: YN("正確", "不適切") },
+      { key: "subCat", label: "サブカテゴリ", type: "toggle", criteria: "設定あり", weight: 4, impact: { rank: 2, cvr: 1, trust: 1 }, toggle: YN() },
+      { key: "attributes", label: "店舗の特徴・属性", type: "toggle", criteria: "設定あり", weight: 3, impact: { rank: 1, cvr: 2, trust: 1 }, toggle: YN() },
     ],
   },
   {
@@ -126,9 +127,9 @@ export const DIAG_CATEGORIES: readonly DiagCategory[] = [
   {
     key: "review",
     name: "クチコミ",
-    max: 25,
+    max: 20,
     items: [
-      { key: "rating", label: "評価点数", type: "numeric", unit: "★", weight: 1.2, impact: { rank: 2, cvr: 3, trust: 3 },
+      { key: "rating", label: "評価点数", type: "numeric", unit: "★", weight: 6, impact: { rank: 2, cvr: 3, trust: 3 },
         criteria: "Googleマップの星評価",
         stages: [
           { label: "3.0未満", min: 0 },
@@ -137,7 +138,7 @@ export const DIAG_CATEGORIES: readonly DiagCategory[] = [
           { label: "4.0〜4.4（基準）", min: 4.0 },
           { label: "4.5以上", min: 4.5 },
         ] },
-      { key: "count", label: "クチコミ数", type: "numeric", unit: "件", weight: 1, impact: { rank: 3, cvr: 2, trust: 2 },
+      { key: "count", label: "クチコミ数", type: "numeric", unit: "件", weight: 5, impact: { rank: 3, cvr: 2, trust: 2 },
         criteria: "クチコミの総数",
         stages: [
           { label: "0〜5件", min: 0 },
@@ -146,7 +147,7 @@ export const DIAG_CATEGORIES: readonly DiagCategory[] = [
           { label: "31〜100件（基準）", min: 31 },
           { label: "101件以上", min: 101 },
         ] },
-      { key: "reply", label: "返信率（直近10件）", type: "numeric", unit: "件", weight: 1, impact: { rank: 2, cvr: 2, trust: 3 },
+      { key: "reply", label: "返信率（直近10件）", type: "numeric", unit: "件", weight: 5, impact: { rank: 2, cvr: 2, trust: 3 },
         criteria: "直近10件のクチコミ中、返信した件数（クチコミ無し＝0）",
         stages: [
           { label: "0件", min: 0 },
@@ -155,7 +156,7 @@ export const DIAG_CATEGORIES: readonly DiagCategory[] = [
           { label: "6〜8件（基準）", min: 6 },
           { label: "9〜10件", min: 9 },
         ] },
-      { key: "latest", label: "最新のクチコミ", type: "stage5", weight: 0.8, impact: { rank: 2, cvr: 1, trust: 2 },
+      { key: "latest", label: "最新のクチコミ", type: "stage5", weight: 2, impact: { rank: 2, cvr: 1, trust: 2 },
         criteria: "最後にクチコミが付いた時期",
         stages: [
           { label: "クチコミなし" },
@@ -164,7 +165,7 @@ export const DIAG_CATEGORIES: readonly DiagCategory[] = [
           { label: "1〜6ヶ月前（基準）" },
           { label: "1ヶ月以内" },
         ] },
-      { key: "qa", label: "Q&A対応", type: "toggle", criteria: "質問への回答あり", weight: 0.6, impact: { rank: 0, cvr: 1, trust: 1 }, toggle: YN("対応あり", "なし") },
+      { key: "qa", label: "Q&A対応", type: "toggle", criteria: "質問への回答あり", weight: 2, impact: { rank: 0, cvr: 1, trust: 1 }, toggle: YN("対応あり", "なし") },
     ],
   },
   {
@@ -172,14 +173,23 @@ export const DIAG_CATEGORIES: readonly DiagCategory[] = [
     name: "投稿",
     max: 15,
     items: [
-      { key: "frequency", label: "投稿頻度（直近30日）", type: "stage5", weight: 1, impact: { rank: 2, cvr: 1, trust: 1 },
-        criteria: "直近30日の投稿数（最新日付はこの項目に統合）",
+      { key: "count", label: "投稿数（累計）", type: "numeric", unit: "回", weight: 10, impact: { rank: 2, cvr: 1, trust: 1 },
+        criteria: "これまでの投稿数の累計（0回＝0点）",
         stages: [
-          { label: "投稿履歴なし" },
-          { label: "直近30日は0件" },
-          { label: "1〜3件" },
-          { label: "4〜7件（週1・基準）" },
-          { label: "8件以上（週2ペース）" },
+          { label: "0〜10回", min: 0 },
+          { label: "11〜20回", min: 11 },
+          { label: "21〜50回", min: 21 },
+          { label: "51〜100回", min: 51 },
+          { label: "101回以上", min: 101 },
+        ] },
+      { key: "latest", label: "最新の投稿", type: "stage5", weight: 5, impact: { rank: 2, cvr: 1, trust: 2 },
+        criteria: "最後に投稿した時期",
+        stages: [
+          { label: "投稿なし" },
+          { label: "1年以上前" },
+          { label: "半年〜1年前" },
+          { label: "1〜6ヶ月前（基準）" },
+          { label: "1ヶ月以内" },
         ] },
     ],
   },
@@ -187,7 +197,7 @@ export const DIAG_CATEGORIES: readonly DiagCategory[] = [
 
 /** 既定の配点（カテゴリ合計100）。管理画面で上書き可能にする際の初期値。 */
 export const DEFAULT_WEIGHTS: Record<CategoryKey, number> = {
-  basic: 25, content: 20, photo: 15, review: 25, post: 15,
+  basic: 30, content: 20, photo: 15, review: 20, post: 15,
 };
 
 export const TOTAL_MAX = 100;
