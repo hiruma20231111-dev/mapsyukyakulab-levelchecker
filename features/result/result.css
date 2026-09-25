@@ -205,3 +205,28 @@
 .pr-cta-qr{ flex:0 0 auto; text-align:center; }
 .pr-cta-qr img{ width:92px; height:92px; display:block; background:#fff; border-radius:8px; }
 .pr-cta-qr span{ font-size:9px; font-weight:800; color:#06c755; display:block; margin-top:3px; line-height:1.3; }
+
+/* 集客力の評価（新規集客力・選ばれる力） */
+.rs-power{ margin:6px 0 4px; }
+.rs-pw{ background:var(--surface); border:1px solid var(--line); border-left:4px solid var(--line); border-radius:12px; padding:11px 13px; margin:0 0 9px; box-shadow:var(--sh1); }
+.rs-pw-head{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin:0 0 7px; }
+.rs-pw-name{ font-size:12.5px; font-weight:900; color:var(--ink); }
+.rs-pw-level{ font-size:11px; font-weight:900; padding:2px 10px; border-radius:999px; }
+.rs-pw-bar{ height:8px; background:var(--bg); border:1px solid var(--line); border-radius:6px; overflow:hidden; }
+.rs-pw-bar span{ display:block; height:100%; border-radius:6px; }
+.rs-pw-desc{ font-size:11px; color:var(--muted); margin:7px 0 0; line-height:1.5; }
+.rs-pw-low{ border-left-color:#e0574a; } .rs-pw-low .rs-pw-level{ background:#fdeceb; color:#a23b30; } .rs-pw-low .rs-pw-bar span{ background:#e0574a; }
+.rs-pw-mid{ border-left-color:#dc9a34; } .rs-pw-mid .rs-pw-level{ background:#fbf1de; color:#8a5f12; } .rs-pw-mid .rs-pw-bar span{ background:#e0a63c; }
+.rs-pw-good{ border-left-color:#0e9f8e; } .rs-pw-good .rs-pw-level{ background:var(--accent-soft); color:var(--accent-deep); } .rs-pw-good .rs-pw-bar span{ background:var(--grad-teal); }
+
+/* 印刷：集客力の評価 */
+.pr-power{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.pr-pw{ border:1px solid #e4e9ee; border-left:4px solid #e4e9ee; border-radius:10px; padding:10px 12px; }
+.pr-pw-head{ display:flex; justify-content:space-between; align-items:center; font-size:12px; font-weight:900; margin-bottom:6px; }
+.pr-pw-lv{ font-size:11px; font-weight:900; padding:1px 9px; border-radius:999px; }
+.pr-pw-bar{ height:7px; background:#eef3f6; border-radius:5px; overflow:hidden; }
+.pr-pw-bar span{ display:block; height:100%; border-radius:5px; }
+.pr-pw-desc{ font-size:10.5px; color:#5b6b7a; margin:6px 0 0; line-height:1.5; }
+.pr-pw-low{ border-left-color:#e0574a; } .pr-pw-low .pr-pw-lv{ background:#fdeceb; color:#a23b30; } .pr-pw-low .pr-pw-bar span{ background:#e0574a; }
+.pr-pw-mid{ border-left-color:#dc9a34; } .pr-pw-mid .pr-pw-lv{ background:#fbf1de; color:#8a5f12; } .pr-pw-mid .pr-pw-bar span{ background:#e0a63c; }
+.pr-pw-good{ border-left-color:#0e9f8e; } .pr-pw-good .pr-pw-lv{ background:#eafaf7; color:#0a7d70; } .pr-pw-good .pr-pw-bar span{ background:#0e9f8e; }

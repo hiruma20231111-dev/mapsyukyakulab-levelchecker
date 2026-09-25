@@ -35,13 +35,24 @@ export interface CategoryView {
   subs: SubView[];
 }
 
+export type PowerTone = "low" | "mid" | "good";
+export interface PowerAxis {
+  key: "reach" | "appeal";
+  name: string;
+  ratio: number;
+  level: string;
+  tone: PowerTone;
+  desc: string;
+}
+
 export interface ResultView {
   storeName: string;
   total: number;
   max: number;
   rank: Rank;
   verdict: string;
-  aio: { query: string; ratio: number; status: string };
+  /** 点数に基づく客観評価（新規集客力・選ばれる力）。 */
+  power: PowerAxis[];
   categories: CategoryView[];
   /** 優先的に取り組む項目（3軸×不足度の大きい順・最大3件）。 */
   priorities: CategoryView[];
@@ -74,11 +85,11 @@ function reasonOf(impact: Axis3): string {
   return entries[0][0];
 }
 
-/** AI検索での見え方（クチコミ＋コンテンツの充実度を目安に）。 */
-function aioStatus(ratio: number): string {
-  if (ratio >= 0.8) return "選ばれやすい";
-  if (ratio >= 0.5) return "あと一歩";
-  return "これから育てる";
+/** 達成度 → レベル（客観評価）。 */
+function powerLevel(ratio: number): { level: string; tone: "low" | "mid" | "good" } {
+  if (ratio >= 0.7) return { level: "高い", tone: "good" };
+  if (ratio >= 0.4) return { level: "あと一歩", tone: "mid" };
+  return { level: "低い", tone: "low" };
 }
 
 export function buildResultView(
@@ -153,9 +164,25 @@ export function buildResultView(
     .map((c) => categories.find((cv) => cv.key === c.key)!)
     .filter(Boolean);
 
-  const review = byKey.get("review")!;
+  const basic = byKey.get("basic")!;
   const content = byKey.get("content")!;
-  const aioRatio = (review.ratio + content.ratio) / 2;
+  const post = byKey.get("post")!;
+  const review = byKey.get("review")!;
+  const photo = byKey.get("photo")!;
+
+  // 新規集客力（見つかる力）＝発見・順位に効く（基本情報・コンテンツ・投稿）
+  const reachRatio = basic.ratio * 0.4 + content.ratio * 0.4 + post.ratio * 0.2;
+  // 選ばれる力＝信頼・第一印象（クチコミ・写真）
+  const appealRatio = review.ratio * 0.6 + photo.ratio * 0.4;
+  const rl = powerLevel(reachRatio);
+  const al = powerLevel(appealRatio);
+  const reachDesc = rl.tone === "good" ? "検索で新しいお客様に見つけてもらいやすい状態です。" : rl.tone === "mid" ? "見つかりやすさに、まだ伸びしろがあります。" : "まだ検索で見つかりにくい状態です。";
+  const appealDesc = al.tone === "good" ? "見つけたお客様に選ばれやすい状態です。" : al.tone === "mid" ? "選ばれやすさに、まだ伸びしろがあります。" : "選ばれる決め手（クチコミ・写真）がまだ弱い状態です。";
+
+  const power: PowerAxis[] = [
+    { key: "reach", name: "新規集客力（見つかる力）", ratio: reachRatio, level: rl.level, tone: rl.tone, desc: reachDesc },
+    { key: "appeal", name: "選ばれる力（来店につながる力）", ratio: appealRatio, level: al.level, tone: al.tone, desc: appealDesc },
+  ];
 
   return {
     storeName,
@@ -163,7 +190,7 @@ export function buildResultView(
     max: scored.max,
     rank: scored.rank,
     verdict: verdictOf(scored.rank),
-    aio: { query: opts?.query ?? "近くのお店 おすすめ", ratio: aioRatio, status: aioStatus(aioRatio) },
+    power,
     categories,
     priorities,
   };

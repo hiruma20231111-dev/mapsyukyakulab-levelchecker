@@ -183,7 +183,7 @@ export function ResultScreen({
   return (
     <div className="result">
       <header className="rs-hero">
-        <span className="rs-badge"><span className="mini" />AIがあなたのお店を読み解きました</span>
+        <span className="rs-badge"><span className="mini" />現在のGoogleマップ活用レベル</span>
         <div className="rs-store">{data.storeName}</div>
         <div className="rs-orb">
           <div className="oc"><span className="n">{num}</span><span className="d">/ {data.max} 点</span></div>
@@ -221,14 +221,19 @@ export function ResultScreen({
           ))}
         </div>
 
-        <div className="rs-aio">
-          <span className="mini" />
-          <span className="txt">
-            <span className="t1">AI検索での見え方</span>
-            <span className="t2">ChatGPTやGoogleのAIに「近くのおすすめのお店は？」と聞かれたときの選ばれやすさ</span>
-          </span>
-          <span className="stat">{data.aio.status}</span>
-        </div>
+        <section className="rs-power">
+          <div className="rs-sec-label"><Icon name="spark" size={14} />集客力の評価</div>
+          {data.power.map((p) => (
+            <div className={`rs-pw rs-pw-${p.tone}`} key={p.key}>
+              <div className="rs-pw-head">
+                <span className="rs-pw-name">{p.name}</span>
+                <span className="rs-pw-level">{p.level}</span>
+              </div>
+              <div className="rs-pw-bar"><span style={{ width: `${Math.round(p.ratio * 100)}%` }} /></div>
+              <p className="rs-pw-desc">{p.desc}</p>
+            </div>
+          ))}
+        </section>
       </div>
 
       {variant === "sales-preview" ? (

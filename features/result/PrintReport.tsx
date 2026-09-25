@@ -25,6 +25,19 @@ export function PrintReport({ data, dateStr, lineUrl, lineQr }: { data: ResultVi
         </div>
       </div>
 
+      <div className="pr-sec">
+        <div className="pr-sec-h">集客力の評価</div>
+        <div className="pr-power">
+          {data.power.map((p) => (
+            <div className={`pr-pw pr-pw-${p.tone}`} key={p.key}>
+              <div className="pr-pw-head"><span>{p.name}</span><span className="pr-pw-lv">{p.level}</span></div>
+              <div className="pr-pw-bar"><span style={{ width: `${Math.round(p.ratio * 100)}%` }} /></div>
+              <p className="pr-pw-desc">{p.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {data.priorities.length > 0 && (
         <div className="pr-sec">
           <div className="pr-sec-h">優先的に取り組むポイント</div>
