@@ -141,11 +141,11 @@ export function IntakeForm({ salesName }: { salesName: string }) {
 
       <div className="in-field">
         <label>店舗名 <span style={{ color: "var(--g-red)" }}>*</span></label>
-        <input className="in-input" value={storeName} onChange={(e) => setStoreName(e.target.value)} placeholder="例：darts&shot Bar PinkDolphin" />
+        <input className="in-input" value={storeName} onChange={(e) => setStoreName(e.target.value)} placeholder="例：○○○○店" />
       </div>
       <div className="in-field">
         <label>狙う検索キーワード（任意）</label>
-        <input className="in-input" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="例：布施 バー, カラオケ, ダーツバー" />
+        <input className="in-input" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="例：居酒屋、ジム、○○駅 など" />
       </div>
 
       {DIAG_CATEGORIES.map((cat) => {
