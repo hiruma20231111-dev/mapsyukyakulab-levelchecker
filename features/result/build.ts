@@ -164,24 +164,18 @@ export function buildResultView(
     .map((c) => categories.find((cv) => cv.key === c.key)!)
     .filter(Boolean);
 
-  const basic = byKey.get("basic")!;
-  const content = byKey.get("content")!;
-  const post = byKey.get("post")!;
-  const review = byKey.get("review")!;
-  const photo = byKey.get("photo")!;
-
-  // 新規集客力（見つかる力）＝発見・順位に効く（基本情報・コンテンツ・投稿）
-  const reachRatio = basic.ratio * 0.4 + content.ratio * 0.4 + post.ratio * 0.2;
-  // 選ばれる力＝信頼・第一印象（クチコミ・写真）
-  const appealRatio = review.ratio * 0.6 + photo.ratio * 0.4;
+  // 新規集客力＝Googleマップ上の総合的な集客力（総合点の達成度）。
+  const reachRatio = scored.max > 0 ? scored.total / scored.max : 0;
   const rl = powerLevel(reachRatio);
-  const al = powerLevel(appealRatio);
-  const reachDesc = rl.tone === "good" ? "検索で新しいお客様に見つけてもらいやすい状態です。" : rl.tone === "mid" ? "見つかりやすさに、まだ伸びしろがあります。" : "まだ検索で見つかりにくい状態です。";
-  const appealDesc = al.tone === "good" ? "見つけたお客様に選ばれやすい状態です。" : al.tone === "mid" ? "選ばれやすさに、まだ伸びしろがあります。" : "選ばれる決め手（クチコミ・写真）がまだ弱い状態です。";
+  const reachDesc =
+    rl.tone === "good"
+      ? "Googleマップ上の集客力が高い状態です。新しいお客様に見つけてもらいやすい状態です。"
+      : rl.tone === "mid"
+        ? "Googleマップ上の集客力はまだ伸ばせる状態です。整えるほど新しいお客様に見つけてもらいやすくなります。"
+        : "Googleマップ上の集客力が低い状態です。今のままでは新しいお客様に見つけてもらいにくい傾向です。";
 
   const power: PowerAxis[] = [
-    { key: "reach", name: "新規集客力（見つかる力）", ratio: reachRatio, level: rl.level, tone: rl.tone, desc: reachDesc },
-    { key: "appeal", name: "選ばれる力（来店につながる力）", ratio: appealRatio, level: al.level, tone: al.tone, desc: appealDesc },
+    { key: "reach", name: "新規集客力", ratio: reachRatio, level: rl.level, tone: rl.tone, desc: reachDesc },
   ];
 
   return {

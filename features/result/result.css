@@ -220,7 +220,7 @@
 .rs-pw-good{ border-left-color:#0e9f8e; } .rs-pw-good .rs-pw-level{ background:var(--accent-soft); color:var(--accent-deep); } .rs-pw-good .rs-pw-bar span{ background:var(--grad-teal); }
 
 /* 印刷：集客力の評価 */
-.pr-power{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.pr-power{ display:grid; grid-template-columns:1fr; gap:10px; }
 .pr-pw{ border:1px solid #e4e9ee; border-left:4px solid #e4e9ee; border-radius:10px; padding:10px 12px; }
 .pr-pw-head{ display:flex; justify-content:space-between; align-items:center; font-size:12px; font-weight:900; margin-bottom:6px; }
 .pr-pw-lv{ font-size:11px; font-weight:900; padding:1px 9px; border-radius:999px; }

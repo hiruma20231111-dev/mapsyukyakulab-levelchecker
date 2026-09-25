@@ -131,7 +131,7 @@ function DetailSheet({ cat, onClose }: { cat: CategoryView | null; onClose: () =
             </div>
             <div className="rs-sheet-insight">
               <Icon name="spark" size={15} />
-              <span><span className="lab">AIの気づき：</span>{cat.insight}</span>
+              <span><span className="lab">ワンポイント💡 </span>{cat.insight}</span>
             </div>
             <div>
               <span className="rs-sheet-improve">
