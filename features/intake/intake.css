@@ -82,3 +82,10 @@ textarea.in-input{ resize:vertical; min-height:76px; line-height:1.6; font-famil
 .in-share .btn.ghost{ flex:0 0 auto; width:46px; background:var(--surface); color:var(--accent-deep); border:1.5px solid var(--accent); display:grid; place-items:center; }
 
 @media (prefers-reduced-motion:reduce){ .in-orb, .in-step.now .dot{ animation:none; } }
+
+/* 数値入力・対象外表示（ロジック刷新版） */
+.in-numrow{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.in-num{ max-width:120px; }
+.in-unit{ font-size:12.5px; color:var(--muted); font-weight:800; }
+.in-na{ font-size:10.5px; color:var(--faint); font-weight:700; margin-left:4px; }
+.in-chip.on.off{ background:var(--muted); border-color:var(--muted); color:#fff; }

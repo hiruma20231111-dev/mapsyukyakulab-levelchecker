@@ -203,7 +203,7 @@ export function ResultScreen({
               <div className="rs-pri" key={c.key} style={{ borderLeftColor: c.color }}>
                 <span className="rs-pri-no" style={{ background: c.color }}>{i + 1}</span>
                 <div className="rs-pri-main">
-                  <div className="rs-pri-name">{c.name}<small>{c.note}</small></div>
+                  <div className="rs-pri-name">{c.name}<small>{c.reason}</small></div>
                   <div className="rs-pri-step"><b>最初の一歩：</b>{c.firstStep}</div>
                   <div className="rs-pri-effect"><Icon name="spark" size={12} />{c.effect}</div>
                 </div>

@@ -32,7 +32,7 @@ export function PrintReport({ data, dateStr }: { data: ResultView; dateStr: stri
             <div className="pr-pri" key={c.key} style={{ borderLeftColor: c.color }}>
               <span className="pr-pri-no" style={{ background: c.color }}>{i + 1}</span>
               <div className="pr-pri-main">
-                <div className="pr-pri-name">{c.name}<small>（あと最大 +{c.headroom}pt）</small></div>
+                <div className="pr-pri-name">{c.name}<small>（{c.reason}／あと最大 +{c.headroom}pt）</small></div>
                 <div className="pr-pri-step"><b>最初の一歩：</b>{c.firstStep}</div>
                 <div className="pr-pri-effect">{c.effect}</div>
               </div>
