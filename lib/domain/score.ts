@@ -7,8 +7,7 @@ import {
   DEFAULT_WEIGHTS,
   TOTAL_MAX,
   AXIS_WEIGHTS,
-  stageOf,
-  ratioOfStage,
+  ratioOf,
   type CategoryKey,
 } from "@/content/diagnosis-v3";
 import { tierOf, tierColor, type Tier } from "./tier";
@@ -61,7 +60,7 @@ interface CatCalc {
   impact: Axis3;
 }
 
-/** カテゴリの達成度と影響度を計算。依存 off の項目は除外。未回答項目は集計から除外。 */
+/** カテゴリの達成度と影響度を計算。未回答項目は集計から除外。 */
 function calcCategory(catKey: CategoryKey, answers: CategoryAnswers | undefined): CatCalc {
   const cat = DIAG_CATEGORIES.find((c) => c.key === catKey);
   const zero: Axis3 = { rank: 0, cvr: 0, trust: 0 };
@@ -73,17 +72,12 @@ function calcCategory(catKey: CategoryKey, answers: CategoryAnswers | undefined)
   const imp: Axis3 = { rank: 0, cvr: 0, trust: 0 };
 
   for (const item of cat.items) {
-    // 依存先が off なら評価対象外（例：website=なし のとき https）。
-    if (item.dependsOnOff) {
-      const dep = answers?.[item.dependsOnOff];
-      if (!(typeof dep === "number" && dep >= 1)) continue;
-    }
     const v = answers?.[item.key];
-    const stage = stageOf(item, typeof v === "number" ? v : undefined);
-    if (stage == null) continue; // 未回答は集計から除外
+    const ratio = ratioOf(item, typeof v === "number" ? v : undefined);
+    if (ratio == null) continue; // 未回答は集計から除外
 
     const w = item.weight ?? 1;
-    acc += ratioOfStage(stage) * w;
+    acc += ratio * w;
     wSum += w;
 
     // 影響度は「回答項目」の加重平均（不足の有無に関わらずカテゴリの重要度を表す）。

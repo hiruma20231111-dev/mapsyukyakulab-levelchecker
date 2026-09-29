@@ -1,10 +1,10 @@
 "use client";
 // 営業モード：店舗のGBP状況を入力 → 診断を発行 → 公開URL/QRを表示。
-// 入力タイプは toggle（あり/なし）/ stage5（5段階）/ numeric（数値→段階自動変換）/ paste（説明文の文字数）。
+// 入力タイプは toggle（あり/なし）/ scale（2〜5択）/ numeric（数値→段階自動変換）/ paste（説明文の文字数）。
 import { useMemo, useState } from "react";
 import QRCode from "qrcode";
 import { Icon, type IconName } from "@/design/icons";
-import { DIAG_CATEGORIES, stageOf, ratioOfStage, type CategoryKey, type DiagItem } from "@/content/diagnosis-v3";
+import { DIAG_CATEGORIES, stageOf, ratioOf, type CategoryKey, type DiagItem } from "@/content/diagnosis-v3";
 import { scoreV3, type V3Answers } from "@/lib/domain/score";
 
 const CAT_ICON: Record<CategoryKey, IconName> = {
@@ -167,7 +167,6 @@ export function IntakeForm({ salesName }: { salesName: string }) {
                 onStage={(v) => setVal(cat.key, item.key, v)}
                 onNumeric={(raw) => setNumeric(cat.key, item.key, raw)}
                 onDesc={setDescription}
-                websiteOff={cat.key === "basic" && !((answers.basic?.website ?? 0) >= 1)}
               />
             ))}
           </div>
@@ -188,7 +187,7 @@ export function IntakeForm({ salesName }: { salesName: string }) {
 }
 
 function ItemInput({
-  item, value, descText, onToggle, onStage, onNumeric, onDesc, websiteOff,
+  item, value, descText, onToggle, onStage, onNumeric, onDesc,
 }: {
   item: DiagItem;
   value: number | null | undefined;
@@ -197,17 +196,7 @@ function ItemInput({
   onStage: (v: number) => void;
   onNumeric: (raw: string) => void;
   onDesc: (t: string) => void;
-  websiteOff: boolean;
 }) {
-  // 依存 off（website=なし）のとき https は対象外表示
-  if (item.dependsOnOff === "website" && websiteOff) {
-    return (
-      <div className="in-sub">
-        <div className="in-sub-lbl">{item.label} <span className="in-na">サイト無しのため対象外</span></div>
-      </div>
-    );
-  }
-
   if (item.input === "paste") {
     const len = descText.trim().length;
     const stage = stageOf(item, len);
@@ -223,7 +212,7 @@ function ItemInput({
         />
         <div className="in-analysis">
           <span className={`in-tagm ${len >= 500 ? "ok" : len > 0 ? "warn" : ""}`}>{len}字 / 目安{DESC_MAX}字</span>
-          {stage != null && <span className="in-tagm score">{item.stages?.[stage - 1]?.label}（{Math.round(ratioOfStage(stage) * 100)}%）</span>}
+          {stage != null && <span className="in-tagm score">{item.stages?.[stage - 1]?.label}（{Math.round((ratioOf(item, len) ?? 0) * 100)}%）</span>}
         </div>
       </div>
     );
@@ -241,7 +230,7 @@ function ItemInput({
     );
   }
 
-  if (item.type === "stage5") {
+  if (item.type === "scale") {
     return (
       <div className="in-sub">
         <div className="in-sub-lbl">{item.label}</div>
@@ -272,7 +261,7 @@ function ItemInput({
         />
         <span className="in-unit">{item.unit}</span>
         {stage != null && (
-          <span className="in-tagm score">{item.stages?.[stage - 1]?.label}（{Math.round(ratioOfStage(stage) * 100)}%）</span>
+          <span className="in-tagm score">{item.stages?.[stage - 1]?.label}（{Math.round((ratioOf(item, value) ?? 0) * 100)}%）</span>
         )}
       </div>
     </div>

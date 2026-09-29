@@ -1,6 +1,6 @@
 // 診断結果ビューの構築（純関数・Reactなし）。2026-09-25 ロジック刷新版。
 // 採点エンジン＋定義＋コピー → 画面/PDF用データ。優先度は3軸（順位/CVR/信頼）×不足度で算出。
-import { DIAG_CATEGORIES, stageOf, type CategoryKey } from "@/content/diagnosis-v3";
+import { DIAG_CATEGORIES, stageOf, ratioOf, type CategoryKey } from "@/content/diagnosis-v3";
 import { RESULT_COPY, verdictOf } from "@/content/result-copy";
 import { scoreV3, type V3Answers, type Rank, type Axis3 } from "@/lib/domain/score";
 import type { IconName } from "@/design/icons";
@@ -66,11 +66,11 @@ const ICON: Record<CategoryKey, IconName> = {
   post: "mega",
 };
 
-/** 段階(1..5) → 判定。4以上=○、3=△、2以下=×。 */
-function judgeOfStage(stage: number | null): Judge {
-  if (stage == null) return "x";
-  if (stage >= 4) return "o";
-  if (stage === 3) return "t";
+/** 割合(0..1) → 判定。75%以上=○、40%以上=△、未満=×。 */
+function judgeOfRatio(ratio: number | null): Judge {
+  if (ratio == null) return "x";
+  if (ratio >= 0.75) return "o";
+  if (ratio >= 0.4) return "t";
   return "x";
 }
 
@@ -106,33 +106,26 @@ export function buildResultView(
     const catAns = answers[cat.key];
 
     const subs: SubView[] = cat.items.map((item) => {
-      // 依存先 off は対象外表示
-      if (item.dependsOnOff) {
-        const dep = catAns?.[item.dependsOnOff];
-        if (!(typeof dep === "number" && dep >= 1)) {
-          return { label: item.label, criteria: item.criteria, current: "対象外", judge: "t" as Judge };
-        }
-      }
       // description（貼り付け）は文字数を値として扱う
       let raw = catAns?.[item.key];
       if (item.input === "paste") {
-        const len = (opts?.descText || "").trim().length;
-        raw = len;
+        raw = (opts?.descText || "").trim().length;
       }
       const stage = stageOf(item, typeof raw === "number" ? raw : undefined);
+      const ratio = ratioOf(item, typeof raw === "number" ? raw : undefined);
       let current: string;
       if (stage == null) {
         current = "—";
       } else if (item.type === "toggle") {
         current = (typeof raw === "number" && raw >= 1) ? (item.toggle?.on ?? "あり") : (item.toggle?.off ?? "なし");
-      } else if (item.type === "stage5") {
+      } else if (item.type === "scale") {
         current = item.stages?.[stage - 1]?.label ?? `段階${stage}`;
       } else {
         // numeric
         const val = typeof raw === "number" ? raw : 0;
         current = item.unit === "★" ? `★${val}` : `${val}${item.unit ?? ""}`;
       }
-      return { label: item.label, criteria: item.criteria, current, judge: judgeOfStage(stage) };
+      return { label: item.label, criteria: item.criteria, current, judge: judgeOfRatio(ratio) };
     });
 
     return {

@@ -16,13 +16,13 @@ describe("rankOf", () => {
   });
 });
 
-// 全項目を最高段階(5相当)に。toggle=1 / stage5=5 / numeric=段階5に入る値。
+// 全項目を最高段階に。toggle=1 / scale=最終段階 / numeric=段階5に入る値。
 const full: V3Answers = {
-  basic: { owner: 1, name: 1, nap: 1, address: 1, phone: 1, hours: 1, website: 1, https: 1, utm: 1 },
-  content: { description: 700, descEn: 1, logo: 1, mainCat: 1, subCat: 1, attributes: 1 },
-  photo: { count: 60, ownerPhotos: 25, fresh: 5 },
-  review: { rating: 4.8, count: 150, reply: 10, latest: 5, qa: 1 },
-  post: { count: 150, latest: 5 },
+  basic: { owner: 1, info: 3, website: 1 },
+  content: { description: 700, category: 3 },
+  photo: { count: 60, fresh: 5 },
+  review: { rating: 4.8, count: 150, reply: 3 },
+  post: { activity: 5 },
 };
 
 describe("scoreV3 — 満点", () => {
@@ -46,42 +46,36 @@ describe("scoreV3 — 全0/未回答", () => {
   });
 });
 
-describe("線形換算（段階→割合）", () => {
-  it("stage5項目を段階4に→75%（回答済み1項目のみ）", () => {
-    const r = scoreV3({ post: { latest: 4 } });
-    const post = r.categories.find((c) => c.key === "post")!;
-    expect(post.ratio).toBeCloseTo(0.75, 5);
-    expect(post.points).toBe(Math.round(0.75 * 15));
+describe("割合換算（段階の位置に比例）", () => {
+  it("3択の真ん中（一部）→50%", () => {
+    const r = scoreV3({ basic: { info: 2 } });
+    const basic = r.categories.find((c) => c.key === "basic")!;
+    expect(basic.ratio).toBeCloseTo(0.5, 5);
   });
-  it("投稿数のしきい値：累計51回→段階4→75%", () => {
-    const r = scoreV3({ post: { count: 51 } });
-    const post = r.categories.find((c) => c.key === "post")!;
-    expect(post.ratio).toBeCloseTo(0.75, 5);
+  it("5択の段階4→75%（回答済み1項目のみ）", () => {
+    const r = scoreV3({ photo: { fresh: 4 } });
+    const photo = r.categories.find((c) => c.key === "photo")!;
+    expect(photo.ratio).toBeCloseTo(0.75, 5);
   });
-  it("numeric項目のしきい値：写真20枚→段階4→75%", () => {
+  it("numeric：写真20枚→段階4→75%", () => {
     const r = scoreV3({ photo: { count: 20 } });
     const photo = r.categories.find((c) => c.key === "photo")!;
     expect(photo.ratio).toBeCloseTo(0.75, 5);
   });
-  it("numeric項目：写真50枚→段階5→100%", () => {
+  it("numeric：写真50枚→段階5→100%", () => {
     const r = scoreV3({ photo: { count: 50 } });
     const photo = r.categories.find((c) => c.key === "photo")!;
     expect(photo.ratio).toBeCloseTo(1, 5);
   });
-});
-
-describe("条件付き除外（website off → https 対象外）", () => {
-  it("website=なし のとき https は評価対象外（二重減点しない）", () => {
-    const r = scoreV3({ basic: { website: 0, https: 1 } });
-    const basic = r.categories.find((c) => c.key === "basic")!;
-    // website(0%)のみ集計。https(100%)が入れば ratio>0 になるはずだが除外されるため 0。
-    expect(basic.ratio).toBe(0);
+  it("toggle：あり=100% / なし=0%", () => {
+    expect(scoreV3({ basic: { website: 1 } }).categories.find((c) => c.key === "basic")!.ratio).toBe(1);
+    expect(scoreV3({ basic: { website: 0 } }).categories.find((c) => c.key === "basic")!.ratio).toBe(0);
   });
 });
 
 describe("優先度（3軸×不足度）", () => {
-  it("不足しているカテゴリは priority>0、満点カテゴリは priority≒0", () => {
-    const r = scoreV3({ review: { rating: 2.5, count: 0, reply: 0, latest: 1, qa: 0 }, basic: full.basic });
+  it("不足カテゴリは priority>0、満点カテゴリは priority≒0", () => {
+    const r = scoreV3({ review: { rating: 2.5, count: 0, reply: 1 }, basic: full.basic });
     const review = r.categories.find((c) => c.key === "review")!;
     const basic = r.categories.find((c) => c.key === "basic")!;
     expect(review.priority).toBeGreaterThan(0);
