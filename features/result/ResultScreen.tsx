@@ -5,6 +5,7 @@ import { Icon } from "@/design/icons";
 import type { CategoryView, ResultView } from "./build";
 
 const CIRC = 150.8; // 2π*24
+const ORB_CIRC = 640.88; // 2π*102（総合スコアオーブのリング）
 const prefersReduced = () =>
   typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
@@ -165,9 +166,12 @@ export function ResultScreen({
 }) {
   const [open, setOpen] = useState<CategoryView | null>(null);
   const [num, setNum] = useState(0);
+  const [orbOff, setOrbOff] = useState(ORB_CIRC);
 
   useEffect(() => {
-    if (prefersReduced()) { setNum(data.total); return; }
+    const ratio = data.max > 0 ? data.total / data.max : 0;
+    const orbTarget = ORB_CIRC * (1 - ratio);
+    if (prefersReduced()) { setNum(data.total); setOrbOff(orbTarget); return; }
     let raf = 0; let start: number | null = null; const dur = 1400;
     const tick = (ts: number) => {
       if (start == null) start = ts;
@@ -176,9 +180,9 @@ export function ResultScreen({
       setNum(Math.round(data.total * e));
       if (p < 1) raf = requestAnimationFrame(tick);
     };
-    const t = setTimeout(() => { raf = requestAnimationFrame(tick); }, 300);
+    const t = setTimeout(() => { setOrbOff(orbTarget); raf = requestAnimationFrame(tick); }, 300);
     return () => { clearTimeout(t); cancelAnimationFrame(raf); };
-  }, [data.total]);
+  }, [data.total, data.max]);
 
   return (
     <div className="result">
@@ -186,6 +190,21 @@ export function ResultScreen({
         <span className="rs-badge"><span className="mini" />現在のGoogleマップ活用レベル</span>
         <div className="rs-store">{data.storeName}</div>
         <div className="rs-orb">
+          <svg className="rs-orb-ring" viewBox="0 0 236 236" aria-hidden>
+            <defs>
+              <linearGradient id="rsScoreGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stopColor="var(--g-blue)" />
+                <stop offset="0.45" stopColor="var(--g-green)" />
+                <stop offset="0.78" stopColor="var(--g-yellow)" />
+                <stop offset="1" stopColor="var(--g-red)" />
+              </linearGradient>
+            </defs>
+            <circle cx="118" cy="118" r="102" fill="none" stroke="#eef2f6" strokeWidth="18" />
+            <circle
+              className="rs-orb-arc" cx="118" cy="118" r="102" fill="none" stroke="url(#rsScoreGrad)"
+              strokeWidth="18" strokeLinecap="round" strokeDasharray={ORB_CIRC} strokeDashoffset={orbOff}
+            />
+          </svg>
           <div className="oc"><span className="n">{num}</span><span className="d">/ {data.max} 点</span></div>
           <div className="rs-grade"><span className="gl">{data.rank}</span><span className="gt">RANK</span></div>
         </div>
