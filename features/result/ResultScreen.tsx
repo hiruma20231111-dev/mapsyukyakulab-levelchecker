@@ -4,24 +4,23 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Icon } from "@/design/icons";
 import type { CategoryView, ResultView } from "./build";
 
-const CIRC = 150.8; // 2π*24
 const ORB_CIRC = 640.88; // 2π*102（総合スコアオーブのリング）
 const prefersReduced = () =>
   typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
-/** はみ出すリング型スコア＋長押しで詳細。 */
+/** 2×2カードグリッド（アイコン＋大きい数字＋横バー）＋長押しで詳細。Canva画像デザイン準拠。 */
 function CategoryRow({ cat, onOpen }: { cat: CategoryView; onOpen: (c: CategoryView) => void }) {
   const [holding, setHolding] = useState(false);
   const [fired, setFired] = useState(false);
-  const [offset, setOffset] = useState(CIRC);
+  const [barW, setBarW] = useState(0);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const firedRef = useRef(false);
 
   useEffect(() => {
     const reduce = prefersReduced();
-    const target = CIRC * (1 - cat.ratio);
-    if (reduce) { setOffset(target); return; }
-    const t = setTimeout(() => setOffset(target), 250);
+    const target = Math.round(cat.ratio * 100);
+    if (reduce) { setBarW(target); return; }
+    const t = setTimeout(() => setBarW(target), 250);
     return () => clearTimeout(t);
   }, [cat.ratio]);
 
@@ -46,8 +45,7 @@ function CategoryRow({ cat, onOpen }: { cat: CategoryView; onOpen: (c: CategoryV
   return (
     <button
       type="button"
-      className={`rs-row${holding ? " holding" : ""}${fired ? " fired" : ""}`}
-      style={{ borderLeftColor: cat.color }}
+      className={`rs-card${holding ? " holding" : ""}${fired ? " fired" : ""}`}
       onPointerDown={start}
       onPointerUp={cancel}
       onPointerLeave={cancel}
@@ -56,26 +54,17 @@ function CategoryRow({ cat, onOpen }: { cat: CategoryView; onOpen: (c: CategoryV
       onContextMenu={(e) => e.preventDefault()}
       aria-label={`${cat.name} ${cat.points}点。長押しで詳細`}
     >
-      <span className="rs-row-ic" style={{ background: cat.color + "22", color: cat.color }}>
-        <Icon name={cat.icon} size={18} />
-      </span>
-      <span className="rs-row-mid">
-        <span className="rs-row-name">{cat.name}</span>
-        <span className="rs-row-note">{cat.note}</span>
-      </span>
-      <span className="rs-ring">
-        <svg viewBox="0 0 64 64" aria-hidden>
-          <circle cx="32" cy="32" r="24" fill="none" stroke="#eef2f5" strokeWidth="6" />
-          <circle
-            className="prog" cx="32" cy="32" r="24" fill="none" stroke={cat.color} strokeWidth="6"
-            strokeLinecap="round" strokeDasharray={CIRC} strokeDashoffset={offset}
-            transform="rotate(-90 32 32)"
-          />
-        </svg>
-        <span className="rn" style={{ color: cat.color }}>
+      <span className="rs-card-top">
+        <span className="rs-card-ic" style={{ background: cat.color + "22", color: cat.color }}>
+          <Icon name={cat.icon} size={18} />
+        </span>
+        <span className="rs-card-score" style={{ color: cat.color }}>
           {cat.points}<small>/{cat.max}</small>
         </span>
       </span>
+      <span className="rs-card-name">{cat.name}</span>
+      <span className="rs-card-note">{cat.note}</span>
+      <span className="rs-card-bar"><i style={{ width: `${barW}%`, background: cat.color }} /></span>
       <span className="rs-holdbar" />
     </button>
   );

@@ -49,24 +49,24 @@
 .rs-pri-gain small{ font-size:10px; font-weight:700; color:var(--muted); }
 .rs-pri-note{ font-size:11px; color:var(--muted); margin:2px 2px 0; line-height:1.5; }
 
-/* 5項目：はみ出すリング */
-.rs-rows{ display:flex; flex-direction:column; gap:14px; padding-right:6px; }
-.rs-row{ position:relative; display:flex; align-items:center; gap:11px; width:100%; text-align:left; background:var(--surface); border:1px solid var(--line); border-left-width:5px; border-radius:var(--r-md); padding:12px 66px 12px 12px; box-shadow:var(--sh1); cursor:pointer; font-family:inherit; -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; transition:transform .16s var(--ease), box-shadow .16s ease; min-height:58px; overflow:visible; }
-.rs-row:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
-.rs-row-ic{ width:34px; height:34px; border-radius:10px; display:grid; place-items:center; flex:0 0 auto; }
-.rs-row-mid{ min-width:0; flex:1; }
-.rs-row-name{ display:block; font-size:13.5px; font-weight:800; color:var(--ink); }
-.rs-row-note{ display:block; font-size:11px; color:var(--muted); line-height:1.4; margin-top:1px; }
-.rs-ring{ position:absolute; right:-10px; top:50%; transform:translateY(-50%); width:64px; height:64px; border-radius:999px; background:#fff; display:grid; place-items:center; box-shadow:0 8px 20px rgba(11,60,79,.10), 0 0 0 5px var(--bg); }
-.rs-ring svg{ position:absolute; inset:0; width:64px; height:64px; }
-.rs-ring .prog{ transition:stroke-dashoffset 1s var(--ease); }
-.rs-ring .rn{ position:relative; z-index:1; font-size:21px; font-weight:900; line-height:1; font-variant-numeric:tabular-nums; letter-spacing:-.5px; }
-.rs-ring .rn small{ font-size:9.5px; font-weight:800; color:var(--faint); }
-.rs-holdbar{ position:absolute; left:6px; bottom:2px; height:3px; width:0; background:var(--accent); border-radius:99px; }
-.rs-row.holding{ transform:scale(1.04); box-shadow:0 0 0 3px rgba(14,159,142,.30), var(--sh2); z-index:3; }
-.rs-row.holding .rs-holdbar{ transition:width .45s linear; width:calc(100% - 12px); height:4px; box-shadow:0 0 10px var(--accent); }
-@keyframes rs-fire{ 0%{ transform:scale(1.04); } 35%{ transform:scale(.965); } 70%{ transform:scale(1.02); } 100%{ transform:scale(1); } }
-.rs-row.fired{ animation:rs-fire .34s var(--ease); }
+/* 5項目：2×2カードグリッド（Canva画像デザイン準拠：アイコン＋大きい数字＋横バー） */
+.rs-rows{ display:grid; grid-template-columns:1fr 1fr; gap:11px; }
+.rs-rows > .rs-card:last-child:nth-child(odd){ grid-column:1 / -1; }
+.rs-card{ position:relative; display:flex; flex-direction:column; gap:7px; width:100%; text-align:left; background:var(--surface); border:1px solid var(--line); border-radius:var(--r-card); padding:13px 13px 15px; box-shadow:var(--sh1); cursor:pointer; font-family:inherit; -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; overflow:hidden; transition:transform .16s var(--ease), box-shadow .16s ease; }
+.rs-card:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+.rs-card-top{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.rs-card-ic{ width:34px; height:34px; border-radius:10px; display:grid; place-items:center; flex:0 0 auto; }
+.rs-card-score{ font-size:22px; font-weight:900; line-height:1; font-variant-numeric:tabular-nums; letter-spacing:-.5px; }
+.rs-card-score small{ font-size:11px; font-weight:800; color:var(--faint); }
+.rs-card-name{ font-size:13.5px; font-weight:800; color:var(--ink); }
+.rs-card-note{ font-size:11px; color:var(--muted); line-height:1.4; min-height:2.8em; }
+.rs-card-bar{ height:7px; border-radius:99px; background:#eef2f5; overflow:hidden; margin-top:2px; }
+.rs-card-bar > i{ display:block; height:100%; border-radius:99px; width:0; transition:width .9s var(--ease); }
+.rs-holdbar{ position:absolute; left:12px; bottom:4px; height:3px; width:0; background:var(--accent); border-radius:99px; }
+.rs-card.holding{ transform:scale(1.03); box-shadow:0 0 0 3px rgba(14,159,142,.28), var(--sh2); z-index:3; }
+.rs-card.holding .rs-holdbar{ transition:width .45s linear; width:calc(100% - 24px); height:4px; box-shadow:0 0 10px var(--accent); }
+@keyframes rs-fire{ 0%{ transform:scale(1.03); } 35%{ transform:scale(.965); } 70%{ transform:scale(1.02); } 100%{ transform:scale(1); } }
+.rs-card.fired{ animation:rs-fire .34s var(--ease); }
 
 /* AI検索ストリップ */
 .rs-aio{ display:flex; align-items:center; gap:10px; background:linear-gradient(135deg,#132a44,#0e6f7e); color:#fff; border-radius:var(--r-md); padding:11px 13px; margin-top:16px; }
@@ -122,8 +122,8 @@
 @media (prefers-reduced-motion:reduce){
   .rs-badge .mini, .rs-aio .mini{ animation:none; }
   .rs-orb{ animation:none; } .rs-orb-arc{ transition:none; } .rs-grade{ animation:none; transform:scale(1); }
-  .rs-ring .prog{ transition:none; } .rs-row.holding .rs-holdbar{ transition:none; }
-  .rs-row.holding{ transform:none; } .rs-row.fired{ animation:none; }
+  .rs-card-bar > i{ transition:none; } .rs-card.holding .rs-holdbar{ transition:none; }
+  .rs-card.holding{ transform:none; } .rs-card.fired{ animation:none; }
   .rs-sheet.open{ animation:none; transform:translateX(-50%) translateY(0); } .rs-sheet.open .rs-sheet-ic{ animation:none; }
   .rs-sub{ opacity:1; transform:none; }
 }
