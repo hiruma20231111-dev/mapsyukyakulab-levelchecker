@@ -47,6 +47,17 @@ function Confetti() {
   return <canvas ref={ref} className="rs-confetti" aria-hidden />;
 }
 
+/** 達成度→デモ風ステータスラベル（実際の ratio から導出）。 */
+function statusLabel(ratio: number): string {
+  if (ratio >= 0.8) return "とても良いです";
+  if (ratio >= 0.6) return "良い調子です";
+  if (ratio >= 0.4) return "改善の余地あり";
+  return "優先的に改善しましょう";
+}
+
+/** カード表示順（デモ準拠：基本情報→クチコミ→写真→投稿→コンテンツ）。 */
+const CARD_ORDER: Record<string, number> = { basic: 0, review: 1, photo: 2, post: 3, content: 4 };
+
 /** 2×2カードグリッド（アイコン＋大きい数字＋横バー）＋長押しで詳細。Canva画像デザイン準拠。 */
 function CategoryRow({ cat, onOpen }: { cat: CategoryView; onOpen: (c: CategoryView) => void }) {
   const [holding, setHolding] = useState(false);
@@ -102,7 +113,7 @@ function CategoryRow({ cat, onOpen }: { cat: CategoryView; onOpen: (c: CategoryV
       <span className="rs-card-num" style={{ color: cat.color }}>{cat.points}<small>/{cat.max}</small></span>
       <span className="rs-card-bar"><i style={{ width: `${barW}%`, background: cat.color }} /></span>
       <span className="rs-card-foot">
-        <span className="rs-card-status" style={{ color: cat.color }}>{cat.note}</span>
+        <span className="rs-card-status" style={{ color: cat.color }}>{statusLabel(cat.ratio)}</span>
         <span className="rs-card-chev">
           <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="m9 6 6 6-6 6" /></svg>
         </span>
@@ -250,6 +261,7 @@ export function ResultScreen({
           </div>
           <div className="rs-herotxt">
             <div className="rs-store">{data.storeName}</div>
+            <p className="rs-hl">改善でさらに<span className="rs-hl-sh">集客アップ</span>へ<span className="rs-hl-spk"><Icon name="spark" size={13} /></span></p>
             <p className="rs-verdict">{data.verdict}</p>
             <span className="rs-improve-chip">
               <Icon name="spark" size={14} />まだ伸ばせる、改善の余地があります
@@ -279,11 +291,13 @@ export function ResultScreen({
 
         <div className="rs-hint"><Icon name="spark" size={14} />各項目を長押しすると、採点の内訳が見られます</div>
         <div className="rs-rows">
-          {data.categories.map((c, i) => (
-            <div className="rs-cw" key={c.key} style={{ animationDelay: prefersReduced() ? "0ms" : `${260 + i * 100}ms` }}>
-              <CategoryRow cat={c} onOpen={setOpen} />
-            </div>
-          ))}
+          {[...data.categories]
+            .sort((a, b) => (CARD_ORDER[a.key] ?? 99) - (CARD_ORDER[b.key] ?? 99))
+            .map((c, i) => (
+              <div className="rs-cw" key={c.key} style={{ animationDelay: prefersReduced() ? "0ms" : `${260 + i * 100}ms` }}>
+                <CategoryRow cat={c} onOpen={setOpen} />
+              </div>
+            ))}
         </div>
 
         <section className="rs-power">
