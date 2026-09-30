@@ -97,13 +97,16 @@ function CategoryRow({ cat, onOpen }: { cat: CategoryView; onOpen: (c: CategoryV
         <span className="rs-card-ic" style={{ background: cat.color + "22", color: cat.color }}>
           <Icon name={cat.icon} size={18} />
         </span>
-        <span className="rs-card-score" style={{ color: cat.color }}>
-          {cat.points}<small>/{cat.max}</small>
+        <span className="rs-card-name">{cat.name}</span>
+      </span>
+      <span className="rs-card-num" style={{ color: cat.color }}>{cat.points}<small>/{cat.max}</small></span>
+      <span className="rs-card-bar"><i style={{ width: `${barW}%`, background: cat.color }} /></span>
+      <span className="rs-card-foot">
+        <span className="rs-card-status" style={{ color: cat.color }}>{cat.note}</span>
+        <span className="rs-card-chev">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="m9 6 6 6-6 6" /></svg>
         </span>
       </span>
-      <span className="rs-card-name">{cat.name}</span>
-      <span className="rs-card-note">{cat.note}</span>
-      <span className="rs-card-bar"><i style={{ width: `${barW}%`, background: cat.color }} /></span>
       <span className="rs-holdbar" />
     </button>
   );
@@ -195,6 +198,8 @@ export function ResultScreen({
   const [open, setOpen] = useState<CategoryView | null>(null);
   const [num, setNum] = useState(0);
   const [orbOff, setOrbOff] = useState(ORB_CIRC);
+  const [today, setToday] = useState("");
+  useEffect(() => { setToday(new Date().toLocaleDateString("ja-JP", { year: "numeric", month: "2-digit", day: "2-digit" })); }, []);
 
   useEffect(() => {
     const ratio = data.max > 0 ? data.total / data.max : 0;
@@ -219,31 +224,38 @@ export function ResultScreen({
         <span className="rs-spk rs-spk1" aria-hidden><Icon name="spark" size={16} /></span>
         <span className="rs-spk rs-spk2" aria-hidden><Icon name="spark" size={11} /></span>
         <span className="rs-spk rs-spk3" aria-hidden><Icon name="spark" size={13} /></span>
-        <span className="rs-badge"><span className="mini" />現在のGoogleマップ活用レベル</span>
-        <div className="rs-store">{data.storeName}</div>
-        <div className="rs-orb">
-          <svg className="rs-orb-ring" viewBox="0 0 236 236" aria-hidden>
-            <defs>
-              <linearGradient id="rsScoreGrad" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stopColor="var(--g-blue)" />
-                <stop offset="0.45" stopColor="var(--g-green)" />
-                <stop offset="0.78" stopColor="var(--g-yellow)" />
-                <stop offset="1" stopColor="var(--g-red)" />
-              </linearGradient>
-            </defs>
-            <circle cx="118" cy="118" r="102" fill="none" stroke="#eef2f6" strokeWidth="18" />
-            <circle
-              className="rs-orb-arc" cx="118" cy="118" r="102" fill="none" stroke="url(#rsScoreGrad)"
-              strokeWidth="18" strokeLinecap="round" strokeDasharray={ORB_CIRC} strokeDashoffset={orbOff}
-            />
-          </svg>
-          <div className="oc"><span className="n">{num}</span><span className="d">/ {data.max} 点</span></div>
-          <div className="rs-grade"><span className="gl">{data.rank}</span><span className="gt">RANK</span></div>
+        <div className="rs-topbar">
+          <span className="rs-logo"><span className="rs-logo-pin"><Icon name="pin" size={15} /></span>マップ集客ラボ</span>
+          <span className="rs-datechip"><Icon name="spark" size={11} />スコア更新日 {today}</span>
         </div>
-        <p className="rs-verdict">{data.verdict}</p>
-        <span className="rs-improve-chip">
-          <Icon name="spark" size={14} />まだ伸ばせる、改善の余地があります
-        </span>
+        <div className="rs-herorow">
+          <div className="rs-orb">
+            <svg className="rs-orb-ring" viewBox="0 0 236 236" aria-hidden>
+              <defs>
+                <linearGradient id="rsScoreGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stopColor="var(--g-blue)" />
+                  <stop offset="0.45" stopColor="var(--g-green)" />
+                  <stop offset="0.78" stopColor="var(--g-yellow)" />
+                  <stop offset="1" stopColor="var(--g-red)" />
+                </linearGradient>
+              </defs>
+              <circle cx="118" cy="118" r="102" fill="none" stroke="#eef2f6" strokeWidth="18" />
+              <circle
+                className="rs-orb-arc" cx="118" cy="118" r="102" fill="none" stroke="url(#rsScoreGrad)"
+                strokeWidth="18" strokeLinecap="round" strokeDasharray={ORB_CIRC} strokeDashoffset={orbOff}
+              />
+            </svg>
+            <div className="oc"><span className="n">{num}</span><span className="d">/ {data.max} 点</span></div>
+            <div className="rs-grade"><span className="gl">{data.rank}</span><span className="gt">RANK</span></div>
+          </div>
+          <div className="rs-herotxt">
+            <div className="rs-store">{data.storeName}</div>
+            <p className="rs-verdict">{data.verdict}</p>
+            <span className="rs-improve-chip">
+              <Icon name="spark" size={14} />まだ伸ばせる、改善の余地があります
+            </span>
+          </div>
+        </div>
       </header>
 
       <div className="rs-body">
