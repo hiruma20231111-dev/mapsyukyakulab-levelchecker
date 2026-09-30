@@ -1,6 +1,15 @@
 /* 診断結果ページ（オーナー様が受け取る）。承認モックv6.1準拠。色はトークン、tier色はJSからインラインで注入。 */
 
-.result{ padding-bottom:96px; }
+.result{ padding-bottom:96px; position:relative; }
+
+/* 派手演出：読み込み時の紙吹雪＋スパークル */
+.rs-confetti{ position:absolute; top:0; left:0; right:0; height:440px; width:100%; pointer-events:none; z-index:6; }
+.rs-spk{ position:absolute; color:var(--g-yellow); z-index:2; pointer-events:none; }
+.rs-spk1{ top:14px; right:54px; animation:rs-spk-f 4s ease-in-out infinite; }
+.rs-spk2{ top:96px; right:22px; color:var(--g-blue); animation:rs-spk-f 3.2s ease-in-out .4s infinite; }
+.rs-spk3{ top:150px; left:20px; color:var(--g-green); animation:rs-spk-f 3.6s ease-in-out .8s infinite; }
+@keyframes rs-spk-f{ 0%,100%{ transform:translateY(0) rotate(0deg); opacity:.5; } 50%{ transform:translateY(-12px) rotate(15deg); opacity:1; } }
+@keyframes rs-oglow{ 0%,100%{ filter:drop-shadow(0 0 0 rgba(66,133,244,0)); } 50%{ filter:drop-shadow(0 0 20px rgba(66,133,244,.4)); } }
 
 /* ヒーロー（Canva方向・全面採用：白基調＋Googleカラー前面） */
 .rs-hero{ position:relative; background:var(--surface); color:var(--ink); border-radius:0 0 24px 24px; padding:18px 18px 22px; text-align:center; overflow:hidden; border-bottom:1px solid var(--line); }
@@ -13,7 +22,7 @@
 @keyframes rs-spin{ to{ transform:rotate(360deg); } }
 .rs-store{ font-size:22px; color:var(--ink); font-weight:900; margin-top:10px; letter-spacing:.01em; }
 
-.rs-orb{ position:relative; width:236px; height:236px; margin:10px auto 4px; animation:rs-reveal 1.1s var(--ease) both; }
+.rs-orb{ position:relative; width:236px; height:236px; margin:10px auto 4px; animation:rs-reveal 1.1s var(--ease) both, rs-oglow 3s ease-in-out 1.4s infinite; }
 @keyframes rs-reveal{ from{ transform:scale(.86); opacity:0; } to{ transform:scale(1); opacity:1; } }
 .rs-orb-ring{ position:absolute; inset:0; width:236px; height:236px; transform:rotate(-90deg); }
 .rs-orb-arc{ transition:stroke-dashoffset 1.5s var(--ease); }
@@ -51,9 +60,13 @@
 
 /* 5項目：2×2カードグリッド（Canva画像デザイン準拠：アイコン＋大きい数字＋横バー） */
 .rs-rows{ display:grid; grid-template-columns:1fr 1fr; gap:11px; }
-.rs-rows > .rs-card:last-child:nth-child(odd){ grid-column:1 / -1; }
+.rs-cw{ display:flex; opacity:0; animation:rs-rise .6s var(--ease) forwards; }
+.rs-cw > .rs-card{ width:100%; }
+.rs-rows > .rs-cw:last-child:nth-child(odd){ grid-column:1 / -1; }
+@keyframes rs-rise{ 0%{ opacity:0; transform:translateY(18px) scale(.96); } 60%{ opacity:1; transform:translateY(-3px) scale(1.005); } 100%{ opacity:1; transform:none; } }
 .rs-card{ position:relative; display:flex; flex-direction:column; gap:7px; width:100%; text-align:left; background:var(--surface); border:1px solid var(--line); border-radius:var(--r-card); padding:13px 13px 15px; box-shadow:var(--sh1); cursor:pointer; font-family:inherit; -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; overflow:hidden; transition:transform .16s var(--ease), box-shadow .16s ease; }
 .rs-card:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+.rs-card:hover{ transform:translateY(-3px); box-shadow:0 14px 30px rgba(20,45,75,.14); }
 .rs-card-top{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
 .rs-card-ic{ width:34px; height:34px; border-radius:10px; display:grid; place-items:center; flex:0 0 auto; }
 .rs-card-score{ font-size:22px; font-weight:900; line-height:1; font-variant-numeric:tabular-nums; letter-spacing:-.5px; }
@@ -124,6 +137,7 @@
   .rs-orb{ animation:none; } .rs-orb-arc{ transition:none; } .rs-grade{ animation:none; transform:scale(1); }
   .rs-card-bar > i{ transition:none; } .rs-card.holding .rs-holdbar{ transition:none; }
   .rs-card.holding{ transform:none; } .rs-card.fired{ animation:none; }
+  .rs-cw{ animation:none; opacity:1; } .rs-spk{ display:none; } .rs-confetti{ display:none; } .rs-card:hover{ transform:none; }
   .rs-sheet.open{ animation:none; transform:translateX(-50%) translateY(0); } .rs-sheet.open .rs-sheet-ic{ animation:none; }
   .rs-sub{ opacity:1; transform:none; }
 }

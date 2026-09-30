@@ -8,6 +8,45 @@ const ORB_CIRC = 640.88; // 2π*102（総合スコアオーブのリング）
 const prefersReduced = () =>
   typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
+/** 読み込み時の紙吹雪バースト（派手演出）。reduced-motion では出さない。 */
+function Confetti() {
+  const ref = useRef<HTMLCanvasElement | null>(null);
+  useEffect(() => {
+    if (prefersReduced()) return;
+    const cv = ref.current;
+    if (!cv) return;
+    const ctx = cv.getContext("2d");
+    if (!ctx) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const W = cv.clientWidth || cv.offsetWidth;
+    const H = cv.clientHeight || cv.offsetHeight;
+    cv.width = W * dpr; cv.height = H * dpr; ctx.scale(dpr, dpr);
+    const cols = ["#4285f4", "#34a853", "#fbbc05", "#ea4335", "#06c755"];
+    const parts = Array.from({ length: 130 }, (_, i) => ({
+      x: W / 2 + (Math.random() - 0.5) * 90, y: H * 0.34 + (Math.random() - 0.5) * 40,
+      vx: (Math.random() - 0.5) * 9, vy: Math.random() * -11 - 3,
+      s: 4 + Math.random() * 6, r: Math.random() * Math.PI, vr: (Math.random() - 0.5) * 0.4,
+      c: cols[i % cols.length], life: 0, max: 70 + Math.random() * 40,
+    }));
+    let raf = 0;
+    const tick = () => {
+      ctx.clearRect(0, 0, W, H);
+      let alive = false;
+      for (const p of parts) {
+        if (p.life > p.max) continue;
+        alive = true; p.life++; p.vy += 0.32; p.x += p.vx; p.y += p.vy; p.vx *= 0.99; p.r += p.vr;
+        ctx.save(); ctx.globalAlpha = Math.max(0, 1 - p.life / p.max);
+        ctx.translate(p.x, p.y); ctx.rotate(p.r); ctx.fillStyle = p.c;
+        ctx.fillRect(-p.s / 2, -p.s / 2, p.s, p.s * 0.6); ctx.restore();
+      }
+      if (alive) raf = requestAnimationFrame(tick); else ctx.clearRect(0, 0, W, H);
+    };
+    const t = setTimeout(() => { raf = requestAnimationFrame(tick); }, 450);
+    return () => { clearTimeout(t); cancelAnimationFrame(raf); };
+  }, []);
+  return <canvas ref={ref} className="rs-confetti" aria-hidden />;
+}
+
 /** 2×2カードグリッド（アイコン＋大きい数字＋横バー）＋長押しで詳細。Canva画像デザイン準拠。 */
 function CategoryRow({ cat, onOpen }: { cat: CategoryView; onOpen: (c: CategoryView) => void }) {
   const [holding, setHolding] = useState(false);
@@ -175,7 +214,11 @@ export function ResultScreen({
 
   return (
     <div className="result">
+      <Confetti />
       <header className="rs-hero">
+        <span className="rs-spk rs-spk1" aria-hidden><Icon name="spark" size={16} /></span>
+        <span className="rs-spk rs-spk2" aria-hidden><Icon name="spark" size={11} /></span>
+        <span className="rs-spk rs-spk3" aria-hidden><Icon name="spark" size={13} /></span>
         <span className="rs-badge"><span className="mini" />現在のGoogleマップ活用レベル</span>
         <div className="rs-store">{data.storeName}</div>
         <div className="rs-orb">
@@ -224,8 +267,10 @@ export function ResultScreen({
 
         <div className="rs-hint"><Icon name="spark" size={14} />各項目を長押しすると、採点の内訳が見られます</div>
         <div className="rs-rows">
-          {data.categories.map((c) => (
-            <CategoryRow key={c.key} cat={c} onOpen={setOpen} />
+          {data.categories.map((c, i) => (
+            <div className="rs-cw" key={c.key} style={{ animationDelay: prefersReduced() ? "0ms" : `${260 + i * 100}ms` }}>
+              <CategoryRow cat={c} onOpen={setOpen} />
+            </div>
           ))}
         </div>
 
