@@ -260,3 +260,9 @@
 .pr-pw-low{ border-left-color:#e0574a; } .pr-pw-low .pr-pw-lv{ background:#fdeceb; color:#a23b30; } .pr-pw-low .pr-pw-bar span{ background:#e0574a; }
 .pr-pw-mid{ border-left-color:#dc9a34; } .pr-pw-mid .pr-pw-lv{ background:#fbf1de; color:#8a5f12; } .pr-pw-mid .pr-pw-bar span{ background:#e0a63c; }
 .pr-pw-good{ border-left-color:#0e9f8e; } .pr-pw-good .pr-pw-lv{ background:#eafaf7; color:#0a7d70; } .pr-pw-good .pr-pw-bar span{ background:#0e9f8e; }
+
+/* クチコミ収集POP（オーナー結果画面のCTA内） */
+.rs-pop { margin-top: 10px; padding-top: 12px; border-top: 1px dashed var(--line, #e3e9ef); }
+.rs-pop-lab { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; color: var(--ink, #2b3a46); margin-bottom: 8px; }
+.rs-pop-btns { display: flex; gap: 8px; }
+.rs-pop-btns .btn { flex: 1; }

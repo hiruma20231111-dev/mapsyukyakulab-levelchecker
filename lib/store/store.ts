@@ -150,6 +150,7 @@ export interface CreateLeadInput {
   salesId: string;
   storeName: string;
   answers: Lead["answers"];
+  placeId?: string;
   query?: string;
   weights?: Lead["weights"];
   descText?: string;
@@ -165,6 +166,7 @@ export async function createLead(input: CreateLeadInput): Promise<Lead> {
     salesId: input.salesId,
     storeName: input.storeName.trim() || "店舗名未設定",
     answers: input.answers,
+    placeId: input.placeId,
     query: input.query,
     weights: input.weights,
     descText: input.descText,
@@ -226,6 +228,26 @@ export async function updateLeadStatus(id: string, status: LeadStatus): Promise<
     status,
     statusHistory: [...cur.statusHistory, { status, ts: now }],
     updatedAt: now,
+  };
+  const c = getClient();
+  if (c) {
+    try {
+      await c.set(`lc:lead:${id}`, JSON.stringify(next));
+      return next;
+    } catch { /* fallback */ }
+  }
+  leadMem.set(id, next);
+  return next;
+}
+
+/** 店舗の Place ID を設定/更新する（空文字でクリア）。クチコミ収集POPのQRに使う。 */
+export async function setLeadPlaceId(id: string, placeId: string): Promise<Lead | null> {
+  const cur = await getLead(id);
+  if (!cur) return null;
+  const next: Lead = {
+    ...cur,
+    placeId: placeId || undefined,
+    updatedAt: Date.now(),
   };
   const c = getClient();
   if (c) {

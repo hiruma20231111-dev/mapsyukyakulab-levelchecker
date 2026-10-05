@@ -195,6 +195,7 @@ export function ResultScreen({
   onIssue,
   slug,
   lineUrl,
+  popReady,
 }: {
   data: ResultView;
   /** owner=お客様が受け取る画面 / sales-preview=営業が発行前に確認する画面 */
@@ -205,6 +206,8 @@ export function ResultScreen({
   slug?: string;
   /** owner: LINE友だち追加（無料トライアル申込）URL。空なら非表示。 */
   lineUrl?: string;
+  /** owner: Place ID 設定済みなら、クチコミ収集POPのダウンロードを表示。 */
+  popReady?: boolean;
 }) {
   const [open, setOpen] = useState<CategoryView | null>(null);
   const [num, setNum] = useState(0);
@@ -331,6 +334,19 @@ export function ResultScreen({
             <a className="btn ghost" href={`/r/${slug}/print`} target="_blank" rel="noopener noreferrer">
               <Icon name="book" size={16} />診断結果をPDFで保存・印刷
             </a>
+          ) : null}
+          {slug && popReady ? (
+            <div className="rs-pop">
+              <div className="rs-pop-lab"><Icon name="chat" size={14} />クチコミ収集POP（印刷してお店に置けます）</div>
+              <div className="rs-pop-btns">
+                <a className="btn ghost" href={`/r/${slug}/pop/ja`} target="_blank" rel="noopener noreferrer">
+                  <Icon name="book" size={15} />日本語版をPDFで保存
+                </a>
+                <a className="btn ghost" href={`/r/${slug}/pop/en`} target="_blank" rel="noopener noreferrer">
+                  <Icon name="book" size={15} />English PDF
+                </a>
+              </div>
+            </div>
           ) : null}
           <p className="note">無料トライアルで、これらの改善を専門スタッフが一緒に進められます。</p>
         </div>

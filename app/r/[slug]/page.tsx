@@ -28,7 +28,7 @@ export default async function ResultPage({ params }: { params: { slug: string } 
   });
   return (
     <main className="app">
-      <ResultScreen data={data} variant="owner" slug={lead.slug} lineUrl={lineUrl} />
+      <ResultScreen data={data} variant="owner" slug={lead.slug} lineUrl={lineUrl} popReady={!!lead.placeId} />
     </main>
   );
 }

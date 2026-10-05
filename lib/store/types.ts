@@ -52,6 +52,8 @@ export interface Lead {
   salesId: string;
   storeName: string;
   answers: V3Answers;
+  /** 店舗の Google Place ID。クチコミ収集POPのQR（クチコミ投稿リンク）に使う。未設定ならPOPは出さない。 */
+  placeId?: string;
   query?: string;
   weights?: Partial<Record<CategoryKey, number>>;
   descText?: string;

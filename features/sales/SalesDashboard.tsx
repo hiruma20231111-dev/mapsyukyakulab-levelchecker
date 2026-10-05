@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import QRCode from "qrcode";
 import { Icon } from "@/design/icons";
+import { PlaceIdHelp } from "@/features/common/PlaceIdHelp";
 import type { Lead, LeadStatus } from "@/lib/store/types";
 import { STATUS_LABEL, STATUS_ORDER, STATUS_COLOR } from "@/lib/store/types";
 import { countIssuedInMonth, trialRate } from "@/lib/domain/metrics";
@@ -25,6 +26,30 @@ export function SalesDashboard({
   const [busy, setBusy] = useState<string>("");
   const [lineUrl, setLineUrl] = useState(initialLineUrl);
   const [lineSaved, setLineSaved] = useState("");
+  const [popFor, setPopFor] = useState<string>("");
+  const [pidDraft, setPidDraft] = useState<Record<string, string>>({});
+  const [pidMsg, setPidMsg] = useState<string>("");
+
+  async function savePlaceId(id: string) {
+    const value = (pidDraft[id] ?? "").trim();
+    setBusy(id);
+    try {
+      const res = await fetch(`/api/leads/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ placeId: value }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || "保存に失敗しました。");
+      setLeads((ls) => ls.map((l) => (l.id === id ? { ...l, placeId: data.lead?.placeId } : l)));
+      setPidMsg(id);
+      setTimeout(() => setPidMsg(""), 1600);
+    } catch (e) {
+      alert(e instanceof Error ? e.message : "保存に失敗しました。");
+    } finally {
+      setBusy("");
+    }
+  }
 
   async function saveLine() {
     const res = await fetch("/api/me", {
@@ -154,10 +179,47 @@ export function SalesDashboard({
                 <a className="sd-act" href={`/r/${l.slug}/print`} target="_blank" rel="noopener noreferrer">
                   <Icon name="book" size={14} />PDF
                 </a>
+                <button
+                  className={`sd-act ${l.placeId ? "sd-act-on" : ""}`}
+                  onClick={() => {
+                    setPopFor(popFor === l.id ? "" : l.id);
+                    setPidDraft((d) => (l.id in d ? d : { ...d, [l.id]: l.placeId ?? "" }));
+                  }}
+                  type="button"
+                >
+                  <Icon name="chat" size={14} />クチコミPOP
+                </button>
                 <button className="sd-act sd-del" onClick={() => remove(l.id, l.storeName)} type="button">
                   <Icon name="slash" size={14} />削除
                 </button>
               </div>
+
+              {popFor === l.id && (
+                <div className="sd-pop">
+                  <div className="sd-pop-lab">Google Place ID（クチコミPOPのQRに使用）</div>
+                  <div className="sd-pop-row">
+                    <input
+                      className="sd-line-in"
+                      value={pidDraft[l.id] ?? ""}
+                      onChange={(e) => setPidDraft((d) => ({ ...d, [l.id]: e.target.value }))}
+                      placeholder="ChIJ...（Place ID Finderで取得）"
+                    />
+                    <button className="sd-line-btn" onClick={() => savePlaceId(l.id)} disabled={busy === l.id}>保存</button>
+                  </div>
+                  <PlaceIdHelp />
+                  <div className="sd-pop-note">
+                    {pidMsg === l.id
+                      ? <span className="sd-line-ok">✓ 保存しました</span>
+                      : (l.placeId ? "設定済み。下のボタンでPOP（日英）をPDF発行できます。結果画面にも表示されます。" : "Place IDを設定すると、クチコミ収集POP（日本語/英語）をPDFで発行できます。")}
+                  </div>
+                  {l.placeId && (
+                    <div className="sd-pop-dls">
+                      <a className="sd-act" href={`/r/${l.slug}/pop/ja`} target="_blank" rel="noopener noreferrer"><Icon name="book" size={14} />POP 日本語</a>
+                      <a className="sd-act" href={`/r/${l.slug}/pop/en`} target="_blank" rel="noopener noreferrer"><Icon name="book" size={14} />POP English</a>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           ))}
         </div>

@@ -4,6 +4,7 @@
 import { useMemo, useState } from "react";
 import QRCode from "qrcode";
 import { Icon, type IconName } from "@/design/icons";
+import { PlaceIdHelp } from "@/features/common/PlaceIdHelp";
 import { DIAG_CATEGORIES, stageOf, ratioOf, type CategoryKey, type DiagItem } from "@/content/diagnosis-v3";
 import { scoreV3, type V3Answers } from "@/lib/domain/score";
 
@@ -21,6 +22,7 @@ type Answers = V3Answers;
 export function IntakeForm({ salesName }: { salesName: string }) {
   const [storeName, setStoreName] = useState("");
   const [query, setQuery] = useState("");
+  const [placeId, setPlaceId] = useState("");
   const [descText, setDescText] = useState("");
   const [answers, setAnswers] = useState<Answers>({});
   const [step, setStep] = useState<"input" | "issuing" | "issued">("input");
@@ -72,7 +74,7 @@ export function IntakeForm({ salesName }: { salesName: string }) {
       const res = await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ storeName, answers, query, descText, keywords: query }),
+        body: JSON.stringify({ storeName, answers, query, placeId, descText, keywords: query }),
       });
       const data = await res.json();
       if (!res.ok || !data?.slug) throw new Error(data?.error || "発行に失敗しました。");
@@ -146,6 +148,12 @@ export function IntakeForm({ salesName }: { salesName: string }) {
       <div className="in-field">
         <label>狙う検索キーワード（任意）</label>
         <input className="in-input" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="例：居酒屋、ジム、○○駅 など" />
+      </div>
+      <div className="in-field">
+        <label>Google Place ID（任意／クチコミPOP用）</label>
+        <input className="in-input" value={placeId} onChange={(e) => setPlaceId(e.target.value)} placeholder="例：ChIJ... （Place ID Finderで取得）" />
+        <p className="in-fieldnote">設定すると、結果画面から店舗のクチコミ収集POP（日本語/英語）をPDFで発行できます。後からダッシュボードでも登録できます。</p>
+        <PlaceIdHelp />
       </div>
 
       {DIAG_CATEGORIES.map((cat) => {

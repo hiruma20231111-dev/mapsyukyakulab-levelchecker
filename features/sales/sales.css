@@ -62,3 +62,11 @@
 .sd-line-btn{ border:0; border-radius:8px; background:#06c755; color:#fff; font-weight:900; font-size:13px; padding:9px 16px; cursor:pointer; font-family:inherit; }
 .sd-line-note{ font-size:10.5px; color:var(--muted); margin-top:7px; }
 .sd-line-ok{ color:var(--accent-deep); font-weight:800; }
+
+/* クチコミPOP パネル（診断カード内） */
+.sd-act-on { border-color: var(--g-blue, #4285f4); color: var(--g-blue, #4285f4); }
+.sd-pop { margin-top: 10px; padding: 12px; border-radius: 12px; background: var(--soft, #f5f8fb); border: 1px solid var(--line, #e3e9ef); }
+.sd-pop-lab { font-size: 11.5px; font-weight: 800; color: var(--ink, #2b3a46); margin-bottom: 8px; }
+.sd-pop-row { display: flex; gap: 8px; }
+.sd-pop-note { margin-top: 8px; font-size: 11px; line-height: 1.5; color: var(--muted, #8a97a3); }
+.sd-pop-dls { display: flex; gap: 8px; margin-top: 10px; }

@@ -89,3 +89,6 @@ textarea.in-input{ resize:vertical; min-height:76px; line-height:1.6; font-famil
 .in-unit{ font-size:12.5px; color:var(--muted); font-weight:800; }
 .in-na{ font-size:10.5px; color:var(--faint); font-weight:700; margin-left:4px; }
 .in-chip.on.off{ background:var(--muted); border-color:var(--muted); color:#fff; }
+
+/* Place ID フィールドの補足 */
+.in-fieldnote { margin-top: 6px; font-size: 11.5px; line-height: 1.5; color: var(--muted); }

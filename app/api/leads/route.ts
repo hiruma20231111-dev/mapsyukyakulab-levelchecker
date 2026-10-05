@@ -1,6 +1,7 @@
 // リード（診断）の発行・一覧。営業がログインしていること（アカウントリンク）が前提。
 import { getSession } from "@/lib/auth/session";
 import { createLead, listLeadsBySales } from "@/lib/store/store";
+import { normalizePlaceId } from "@/lib/domain/review";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -24,6 +25,7 @@ export async function POST(req: Request) {
     salesId: sales.id,
     storeName,
     answers,
+    placeId: normalizePlaceId(b?.placeId) ?? undefined,
     query: typeof b?.query === "string" ? b.query : undefined,
     weights: b?.weights && typeof b.weights === "object" ? b.weights : undefined,
     descText: typeof b?.descText === "string" ? b.descText : undefined,
