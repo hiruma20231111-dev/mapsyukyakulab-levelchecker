@@ -3,9 +3,9 @@
 // 発行フォーム（IntakeForm）と営業ダッシュボード（SalesDashboard）の両方で使う。
 import { Icon } from "@/design/icons";
 
-/** Google 公式の Place ID Finder（地図＋検索でPlace IDを表示できる）。 */
+/** Google 公式の Place ID ドキュメント（ページ内に Place ID Finder ツールが埋め込まれている）。 */
 export const PLACE_ID_FINDER_URL =
-  "https://developers.google.com/maps/documentation/javascript/examples/place-id-finder";
+  "https://developers.google.com/maps/documentation/places/web-service/place-id";
 
 export function PlaceIdHelp() {
   return (
@@ -15,8 +15,8 @@ export function PlaceIdHelp() {
         Place IDを検索（Googleの検索ツールを別タブで開く）
       </a>
       <ol className="pidhelp-steps">
-        <li>上のボタンで Google の「Place ID Finder」を開く</li>
-        <li>地図上部の検索窓に<b>店名や住所</b>を入れて候補を選ぶ</li>
+        <li>上のボタンでGoogleのページを開き、「<b>Place ID Finder</b>」の地図まで少し下にスクロール</li>
+        <li>地図上の検索窓に<b>店名や住所</b>を入れて候補を選ぶ</li>
         <li>ピンの吹き出しに出る <b>Place ID（例：ChIJ…）</b> をコピー</li>
         <li>この入力欄に貼り付けて保存／発行</li>
       </ol>
