@@ -37,3 +37,11 @@ a{ color:var(--accent-deep); text-decoration:none }
 .pidhelp-steps li { margin: 1px 0; }
 .pidhelp-steps b { color: var(--ink, #2b3a46); }
 .pidhelp-note { margin: 7px 0 0; font-size: 11px; color: var(--muted, #8a97a3); }
+
+/* 無料トライアルチラシのポップアップ（2ページ横スクロール） */
+.flyer-modal { position: fixed; inset: 0; z-index: 1100; background: rgba(15,30,45,.72); display: flex; align-items: center; justify-content: center; padding: 14px; }
+.flyer-modal-in { position: relative; width: min(920px, 100%); max-height: 94vh; background: #fff; border-radius: 14px; padding: 14px; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,.4); }
+.flyer-x { position: absolute; top: 8px; right: 8px; z-index: 2; border: none; background: #f0f3f6; width: 34px; height: 34px; border-radius: 9px; font-size: 16px; cursor: pointer; color: #2b3a46; }
+.flyer-scroll { display: flex; gap: 12px; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; padding: 26px 2px 6px; }
+.flyer-page { height: min(78vh, 1100px); width: auto; flex: 0 0 auto; scroll-snap-align: center; border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,.12); }
+.flyer-hint { text-align: center; font-size: 11.5px; color: #8a97a3; padding-top: 8px; }

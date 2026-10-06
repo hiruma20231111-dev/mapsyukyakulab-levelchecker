@@ -275,3 +275,10 @@
 .rs-fmodal-x { border: none; background: #f0f3f6; width: 32px; height: 32px; border-radius: 8px; font-size: 15px; cursor: pointer; color: var(--ink,#2b3a46); flex: 0 0 auto; }
 .rs-fmodal-frame { flex: 1; width: 100%; border: 0; background: #fff; }
 .rs-fmodal-foot { display: flex; gap: 8px; justify-content: flex-end; padding: 10px 14px; border-top: 1px solid var(--line,#e3e9ef); }
+
+/* 診断OFF時の無料トライアル表示（お客様結果ページ） */
+.rs-herotxt-solo { text-align: center; padding: 6px 4px 2px; }
+.rs-trial { padding: 4px 0 8px; }
+.rs-flyer-card { display: block; width: 100%; border: 1px solid var(--line,#e3e9ef); border-radius: 14px; overflow: hidden; background: #fff; cursor: pointer; padding: 0; box-shadow: 0 6px 20px rgba(20,40,60,.1); }
+.rs-flyer-card img { display: block; width: 100%; height: auto; }
+.rs-flyer-cta { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; font-weight: 800; color: #fff; background: var(--g-blue,#4285f4); padding: 12px; }

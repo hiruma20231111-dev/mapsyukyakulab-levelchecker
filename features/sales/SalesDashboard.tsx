@@ -4,6 +4,7 @@ import { useMemo, useRef, useState } from "react";
 import QRCode from "qrcode";
 import { Icon } from "@/design/icons";
 import { PlaceIdHelp } from "@/features/common/PlaceIdHelp";
+import { DIAGNOSIS_ENABLED } from "@/lib/config";
 import type { Lead, LeadStatus } from "@/lib/store/types";
 import { STATUS_LABEL, STATUS_ORDER, STATUS_COLOR } from "@/lib/store/types";
 import { countIssuedInMonth, trialRate } from "@/lib/domain/metrics";
@@ -124,7 +125,7 @@ export function SalesDashboard({
 
       <div className="sd-metrics">
         <div className="sd-card sd-card-main">
-          <div className="sd-card-lab">今月の診断発行数</div>
+          <div className="sd-card-lab">{DIAGNOSIS_ENABLED ? "今月の診断発行数" : "今月の発行数"}</div>
           <div className="sd-card-num">{monthCount}<small>件 / 目標 {monthGoal}件</small></div>
           <div className="sd-goal"><span style={{ width: `${goalPct}%` }} /></div>
           <div className="sd-goal-pct">{goalPct}% 達成</div>
@@ -143,17 +144,17 @@ export function SalesDashboard({
           <button className="sd-line-btn" onClick={saveLine}>保存</button>
         </div>
         <div className="sd-line-note">
-          {lineSaved ? <span className="sd-line-ok">✓ {lineSaved}</span> : "発行した診断結果に、このLINEの「無料トライアル申込」ボタンとPDFのQRが表示されます。"}
+          {lineSaved ? <span className="sd-line-ok">✓ {lineSaved}</span> : (DIAGNOSIS_ENABLED ? "発行した診断結果に、このLINEの「無料トライアル申込」ボタンとPDFのQRが表示されます。" : "発行したお客様ページに、このLINEの「無料トライアル申込」ボタンが表示されます。")}
         </div>
       </div>
 
       <a className="sd-new" href="/new">
-        <Icon name="spark" size={18} />新規診断を発行する
+        <Icon name="spark" size={18} />{DIAGNOSIS_ENABLED ? "新規診断を発行する" : "新規発行（クチコミPOP）"}
       </a>
 
-      <div className="sd-list-h">診断一覧（{leads.length}件）</div>
+      <div className="sd-list-h">{DIAGNOSIS_ENABLED ? "診断一覧" : "発行一覧"}（{leads.length}件）</div>
       {leads.length === 0 ? (
-        <div className="sd-empty">まだ診断がありません。<br />「新規診断を発行する」から始めましょう。</div>
+        <div className="sd-empty">まだ発行がありません。<br />「{DIAGNOSIS_ENABLED ? "新規診断を発行する" : "新規発行"}」から始めましょう。</div>
       ) : (
         <div className="sd-list">
           {leads.map((l) => (
@@ -163,14 +164,14 @@ export function SalesDashboard({
                   {l.storeName}
                   <a className="sd-visit" href={VISIT_FORM_URL} target="_blank" rel="noopener noreferrer">訪問後に回答</a>
                 </div>
-                {hasDiagnosis(l)
+                {DIAGNOSIS_ENABLED && (hasDiagnosis(l)
                   ? <span className="sd-score" title="発行時のスコア">{l.total}<small>点</small></span>
-                  : <span className="sd-undiag">未診断</span>}
+                  : <span className="sd-undiag">未診断</span>)}
               </div>
               <div className="sd-lead-meta">
-                {hasDiagnosis(l)
+                {DIAGNOSIS_ENABLED && (hasDiagnosis(l)
                   ? <span className={`sd-rank r-${l.rank}`}>{l.rank}ランク</span>
-                  : <span className="sd-undiag-chip">Place IDのみ発行</span>}
+                  : <span className="sd-undiag-chip">Place IDのみ発行</span>)}
                 <span className="sd-date">{fmtDate(l.createdAt)} 発行</span>
               </div>
 
@@ -191,14 +192,16 @@ export function SalesDashboard({
 
               <div className="sd-actions">
                 <button className="sd-act" onClick={() => setFrame({ title: l.storeName, src: `/r/${l.slug}`, kind: "result" })} type="button">
-                  <Icon name="search" size={14} />結果
+                  <Icon name="search" size={14} />{DIAGNOSIS_ENABLED ? "結果" : "お客様ページ"}
                 </button>
                 <button className="sd-act" onClick={() => showQr(l.slug, l.storeName)} type="button">
                   <Icon name="link" size={14} />QR / URL
                 </button>
-                <button className="sd-act" onClick={() => setFrame({ title: `${l.storeName}｜診断PDF`, src: `/r/${l.slug}/print?embed=1`, kind: "print" })} type="button">
-                  <Icon name="book" size={14} />PDF
-                </button>
+                {DIAGNOSIS_ENABLED && (
+                  <button className="sd-act" onClick={() => setFrame({ title: `${l.storeName}｜診断PDF`, src: `/r/${l.slug}/print?embed=1`, kind: "print" })} type="button">
+                    <Icon name="book" size={14} />PDF
+                  </button>
+                )}
                 <button
                   className={`sd-act ${l.placeId ? "sd-act-on" : ""}`}
                   onClick={() => {
@@ -210,7 +213,7 @@ export function SalesDashboard({
                   <Icon name="chat" size={14} />クチコミPOP
                 </button>
                 <a className="sd-act" href={`/new?edit=${l.id}`}>
-                  <Icon name="list" size={14} />{hasDiagnosis(l) ? "編集" : "診断追加"}
+                  <Icon name="list" size={14} />{DIAGNOSIS_ENABLED ? (hasDiagnosis(l) ? "編集" : "診断追加") : "編集"}
                 </a>
                 <button className="sd-act sd-del" onClick={() => remove(l.id, l.storeName)} type="button">
                   <Icon name="slash" size={14} />削除

@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import QRCode from "qrcode";
 import { Icon, type IconName } from "@/design/icons";
 import { PlaceIdHelp } from "@/features/common/PlaceIdHelp";
+import { DIAGNOSIS_ENABLED } from "@/lib/config";
 import { DIAG_CATEGORIES, stageOf, ratioOf, type CategoryKey, type DiagItem } from "@/content/diagnosis-v3";
 import { scoreV3, type V3Answers } from "@/lib/domain/score";
 
@@ -74,7 +75,10 @@ export function IntakeForm({ salesName, initial }: { salesName: string; initial?
     [answers],
   );
   // 店名があり、かつ「診断を1つ以上入力」または「Place ID入力済み」なら発行できる。
-  const canIssue = storeName.trim().length > 0 && (answeredCount > 0 || placeId.trim().length > 0);
+  // 診断を眠らせている間は Place ID 必須（クチコミPOP用）。
+  const canIssue =
+    storeName.trim().length > 0 &&
+    (DIAGNOSIS_ENABLED ? answeredCount > 0 || placeId.trim().length > 0 : placeId.trim().length > 0);
 
   async function issue() {
     if (!canIssue) return;
@@ -129,8 +133,8 @@ export function IntakeForm({ salesName, initial }: { salesName: string; initial?
       <div className="in-wrap">
         <div className="in-issue">
           <div className="in-orb"><div className="core"><Icon name="spark" size={26} /></div></div>
-          <p className="in-prog-t">診断を発行しています</p>
-          <p className="in-prog-s">お客様用の結果ページとQRコードを生成中…</p>
+          <p className="in-prog-t">{DIAGNOSIS_ENABLED ? "診断を発行しています" : "発行しています"}</p>
+          <p className="in-prog-s">お客様用のページとQRコードを生成中…</p>
         </div>
       </div>
     );
@@ -143,8 +147,8 @@ export function IntakeForm({ salesName, initial }: { salesName: string; initial?
         <Appbar salesName={salesName} />
         <div className="in-issue">
           <div className="in-done-badge"><Icon name="check" size={30} /></div>
-          <p className="in-done-h">{editing ? "更新しました" : "診断を発行しました"}</p>
-          <p className="in-done-s">{storeName}｜{scored.total}点・{scored.rank}ランク</p>
+          <p className="in-done-h">{editing ? "更新しました" : (DIAGNOSIS_ENABLED ? "診断を発行しました" : "発行しました")}</p>
+          <p className="in-done-s">{storeName}{DIAGNOSIS_ENABLED ? `｜${scored.total}点・${scored.rank}ランク` : ""}</p>
           {qr && <div className="in-qr"><img src={qr} alt="診断結果QR" /></div>}
           <div className="in-urlpill">{issued.url}</div>
           <div className="in-share">
@@ -162,11 +166,17 @@ export function IntakeForm({ salesName, initial }: { salesName: string; initial?
   return (
     <div className="in-wrap">
       <Appbar salesName={salesName} />
-      <h1 className="in-h">{editing ? "診断を編集・追加" : "新規診断を発行"}</h1>
-      <p className="in-hsub">
+      <h1 className="in-h">
         {editing
-          ? "訪問後の内容で更新できます。Place IDだけ先に発行した店舗は、ここで診断を追記してください。"
-          : "お客様のGoogleビジネスプロフィールの状況を入力してください。診断かPlace IDのどちらかがあれば発行できます。"}
+          ? (DIAGNOSIS_ENABLED ? "診断を編集・追加" : "店舗情報を編集")
+          : (DIAGNOSIS_ENABLED ? "新規診断を発行" : "クチコミPOPを発行")}
+      </h1>
+      <p className="in-hsub">
+        {DIAGNOSIS_ENABLED
+          ? (editing
+              ? "訪問後の内容で更新できます。Place IDだけ先に発行した店舗は、ここで診断を追記してください。"
+              : "お客様のGoogleビジネスプロフィールの状況を入力してください。診断かPlace IDのどちらかがあれば発行できます。")
+          : "店舗名とGoogle Place IDを入力すると、クチコミ収集POP（日本語/英語）を発行できます。"}
       </p>
 
       <div className="in-field">
@@ -174,13 +184,13 @@ export function IntakeForm({ salesName, initial }: { salesName: string; initial?
         <input className="in-input" value={storeName} onChange={(e) => setStoreName(e.target.value)} placeholder="例：○○○○店" />
       </div>
       <div className="in-field">
-        <label>Google Place ID（任意／クチコミPOP用）</label>
+        <label>Google Place ID{DIAGNOSIS_ENABLED ? "（任意／クチコミPOP用）" : <span style={{ color: "var(--g-red)" }}> *</span>}</label>
         <input className="in-input" value={placeId} onChange={(e) => setPlaceId(e.target.value)} placeholder="例：ChIJ... （Place ID Finderで取得）" />
-        <p className="in-fieldnote">設定すると、結果画面から店舗のクチコミ収集POP（日本語/英語）をPDFで発行できます。後からダッシュボードでも登録できます。</p>
+        <p className="in-fieldnote">このPlace IDから、店舗のクチコミ収集POP（日本語/英語）をPDFで発行できます。後からダッシュボードでも登録できます。</p>
         <PlaceIdHelp />
       </div>
 
-      {DIAG_CATEGORIES.map((cat) => {
+      {DIAGNOSIS_ENABLED && DIAG_CATEGORIES.map((cat) => {
         const s = scored.categories.find((c) => c.key === cat.key)!;
         return (
           <div className="in-cat" key={cat.key}>
@@ -210,12 +220,15 @@ export function IntakeForm({ salesName, initial }: { salesName: string; initial?
       <div className="in-cta">
         <button className="btn" onClick={issue} disabled={!canIssue}>
           <Icon name="spark" size={18} />
-          {editing ? "更新する" : "発行する"}{answeredCount > 0 ? `（現在 ${scored.total}点・${scored.rank}）` : "（Place IDのみ）"}
+          {editing ? "更新する" : "発行する"}
+          {DIAGNOSIS_ENABLED ? (answeredCount > 0 ? `（現在 ${scored.total}点・${scored.rank}）` : "（Place IDのみ）") : ""}
         </button>
         <p className="note">
-          {answeredCount > 0
-            ? "発行後にお客様へURL/QRで共有できます。クチコミPOPはPlace IDを設定すると発行できます。"
-            : "診断を入力せずPlace IDだけでも発行できます（クチコミPOP先行発行）。診断は後から追加できます。"}
+          {DIAGNOSIS_ENABLED
+            ? (answeredCount > 0
+                ? "発行後にお客様へURL/QRで共有できます。クチコミPOPはPlace IDを設定すると発行できます。"
+                : "診断を入力せずPlace IDだけでも発行できます（クチコミPOP先行発行）。診断は後から追加できます。")
+            : "発行後、ダッシュボードから店舗のクチコミ収集POP（日本語/英語）をPDFで発行できます。"}
         </p>
       </div>
     </div>

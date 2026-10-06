@@ -2,6 +2,8 @@
 // 診断結果ページ（オーナー様が受け取る）。承認モックv6.1準拠。採点エンジンのビューに接続。
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Icon } from "@/design/icons";
+import { DIAGNOSIS_ENABLED } from "@/lib/config";
+import { FlyerModal, FLYER_PAGES } from "@/features/common/FlyerModal";
 import type { CategoryView, ResultView } from "./build";
 
 const ORB_CIRC = 640.88; // 2π*102（総合スコアオーブのリング）
@@ -211,6 +213,7 @@ export function ResultScreen({
 }) {
   const [open, setOpen] = useState<CategoryView | null>(null);
   const [popFrame, setPopFrame] = useState<string | null>(null);
+  const [flyerOpen, setFlyerOpen] = useState(false);
   const [num, setNum] = useState(0);
   const [orbOff, setOrbOff] = useState(ORB_CIRC);
   const [today, setToday] = useState("");
@@ -231,6 +234,64 @@ export function ResultScreen({
     const t = setTimeout(() => { setOrbOff(orbTarget); raf = requestAnimationFrame(tick); }, 300);
     return () => { clearTimeout(t); cancelAnimationFrame(raf); };
   }, [data.total, data.max]);
+
+  // ── 診断を眠らせている間：無料トライアルチラシ＋LINE＋クチコミPOP だけの最小表示 ──
+  if (!DIAGNOSIS_ENABLED) {
+    return (
+      <div className="result">
+        <Confetti />
+        <header className="rs-hero">
+          <div className="rs-topbar">
+            <span className="rs-logo"><span className="rs-logo-pin"><Icon name="pin" size={15} /></span>マップ集客ラボ</span>
+          </div>
+          <div className="rs-herotxt rs-herotxt-solo">
+            <div className="rs-store">{data.storeName}</div>
+            <p className="rs-hl">Googleマップ集客を<span className="rs-hl-sh">まずは無料で体験</span><span className="rs-hl-spk"><Icon name="spark" size={13} /></span></p>
+            <p className="rs-verdict">1ヶ月の無料トライアルで、クチコミ返信・投稿作成・分析レポートをAIが自動化します。</p>
+          </div>
+        </header>
+        <div className="rs-body">
+          <section className="rs-trial">
+            <div className="rs-sec-label"><Icon name="spark" size={14} />無料トライアルのご案内</div>
+            <button type="button" className="rs-flyer-card" onClick={() => setFlyerOpen(true)}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={FLYER_PAGES[0]} alt="無料トライアルのご案内" />
+              <span className="rs-flyer-cta"><Icon name="book" size={15} />タップで詳しく見る（2ページ）</span>
+            </button>
+          </section>
+        </div>
+        <div className="rs-cta rs-cta-owner">
+          {lineUrl ? (
+            <a className="btn btn-line" href={lineUrl} target="_blank" rel="noopener noreferrer">
+              <Icon name="chat" size={18} />LINEで無料トライアルに申し込む
+            </a>
+          ) : null}
+          {slug && popReady ? (
+            <div className="rs-pop">
+              <div className="rs-pop-lab"><Icon name="chat" size={14} />クチコミ収集POP（印刷してお店に置けます）</div>
+              <div className="rs-pop-btns">
+                <button type="button" className="btn ghost" onClick={() => setPopFrame(`/r/${slug}/pop/ja/preview`)}><Icon name="book" size={15} />日本語版を見る</button>
+                <button type="button" className="btn ghost" onClick={() => setPopFrame(`/r/${slug}/pop/en/preview`)}><Icon name="book" size={15} />English</button>
+              </div>
+            </div>
+          ) : null}
+        </div>
+        <FlyerModal open={flyerOpen} onClose={() => setFlyerOpen(false)} />
+        {popFrame && (
+          <div className="rs-fmodal" onClick={() => setPopFrame(null)}>
+            <div className="rs-fmodal-in" onClick={(e) => e.stopPropagation()}>
+              <div className="rs-fmodal-head">
+                <span className="rs-fmodal-title">クチコミ収集POP</span>
+                <button className="rs-fmodal-x" onClick={() => setPopFrame(null)} aria-label="閉じる" type="button">✕</button>
+              </div>
+              <iframe className="rs-fmodal-frame" src={popFrame} title="クチコミ収集POP" />
+              <div className="rs-fmodal-foot"><button className="btn ghost" type="button" onClick={() => setPopFrame(null)}>閉じる</button></div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="result">
