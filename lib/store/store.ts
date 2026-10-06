@@ -240,6 +240,37 @@ export async function updateLeadStatus(id: string, status: LeadStatus): Promise<
   return next;
 }
 
+/** リードの内容を更新する（店名・回答・説明文・Place ID）。回答が変われば再採点する。
+ *  → クチコミPOP先行発行のあと、訪問後に診断を追加/編集する用途。 */
+export async function updateLead(
+  id: string,
+  patch: { storeName?: string; answers?: Lead["answers"]; placeId?: string; descText?: string },
+): Promise<Lead | null> {
+  const cur = await getLead(id);
+  if (!cur) return null;
+  const answers = patch.answers ?? cur.answers;
+  const s = scoreV3(answers, cur.weights);
+  const next: Lead = {
+    ...cur,
+    storeName: (patch.storeName?.trim() || cur.storeName),
+    answers,
+    placeId: patch.placeId !== undefined ? (patch.placeId || undefined) : cur.placeId,
+    descText: patch.descText !== undefined ? patch.descText : cur.descText,
+    total: s.total,
+    rank: s.rank,
+    updatedAt: Date.now(),
+  };
+  const c = getClient();
+  if (c) {
+    try {
+      await c.set(`lc:lead:${id}`, JSON.stringify(next));
+      return next;
+    } catch { /* fallback */ }
+  }
+  leadMem.set(id, next);
+  return next;
+}
+
 /** 店舗の Place ID を設定/更新する（空文字でクリア）。クチコミ収集POPのQRに使う。 */
 export async function setLeadPlaceId(id: string, placeId: string): Promise<Lead | null> {
   const cur = await getLead(id);

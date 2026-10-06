@@ -17,11 +17,12 @@ describe("rankOf", () => {
 });
 
 // 全項目を最高段階に。toggle=1 / scale=最終段階 / numeric=段階5に入る値。
+// （2026-10 採点厳格化：写真70枚以上・クチコミ151件以上・★4.7以上で最高段階）
 const full: V3Answers = {
   basic: { owner: 1, info: 3, website: 1 },
   content: { description: 700, category: 3 },
-  photo: { count: 60, fresh: 5 },
-  review: { rating: 4.8, count: 150, reply: 3 },
+  photo: { count: 80, fresh: 5 },
+  review: { rating: 4.8, count: 160, reply: 3 },
   post: { activity: 5 },
 };
 
@@ -57,13 +58,13 @@ describe("割合換算（段階の位置に比例）", () => {
     const photo = r.categories.find((c) => c.key === "photo")!;
     expect(photo.ratio).toBeCloseTo(0.75, 5);
   });
-  it("numeric：写真20枚→段階4→75%", () => {
-    const r = scoreV3({ photo: { count: 20 } });
+  it("numeric：写真30枚→段階4→75%", () => {
+    const r = scoreV3({ photo: { count: 30 } });
     const photo = r.categories.find((c) => c.key === "photo")!;
     expect(photo.ratio).toBeCloseTo(0.75, 5);
   });
-  it("numeric：写真50枚→段階5→100%", () => {
-    const r = scoreV3({ photo: { count: 50 } });
+  it("numeric：写真70枚→段階5→100%", () => {
+    const r = scoreV3({ photo: { count: 70 } });
     const photo = r.categories.find((c) => c.key === "photo")!;
     expect(photo.ratio).toBeCloseTo(1, 5);
   });

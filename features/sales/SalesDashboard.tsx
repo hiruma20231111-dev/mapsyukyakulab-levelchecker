@@ -8,6 +8,16 @@ import type { Lead, LeadStatus } from "@/lib/store/types";
 import { STATUS_LABEL, STATUS_ORDER, STATUS_COLOR } from "@/lib/store/types";
 import { countIssuedInMonth, trialRate } from "@/lib/domain/metrics";
 
+/** 訪問後に営業が回答するGoogleフォーム。 */
+const VISIT_FORM_URL =
+  "https://docs.google.com/forms/d/e/1FAIpQLSffZz5ZNT6XBM65T9tjJIM5b3ki5x7U56HHSgYPPgqiGCi5bg/viewform";
+
+/** 診断（回答）が1つでも入っているか。Place IDのみ先行発行した店舗は false。 */
+function hasDiagnosis(l: Lead): boolean {
+  const a = l.answers || {};
+  return Object.values(a).some((c) => c && Object.values(c).some((v) => typeof v === "number"));
+}
+
 export function SalesDashboard({
   salesName,
   initialLeads,
@@ -149,11 +159,18 @@ export function SalesDashboard({
           {leads.map((l) => (
             <div className="sd-lead" key={l.id}>
               <div className="sd-lead-top">
-                <div className="sd-lead-name">{l.storeName}</div>
-                <span className="sd-score" title="発行時のスコア">{l.total}<small>点</small></span>
+                <div className="sd-lead-name">
+                  {l.storeName}
+                  <a className="sd-visit" href={VISIT_FORM_URL} target="_blank" rel="noopener noreferrer">訪問後に回答</a>
+                </div>
+                {hasDiagnosis(l)
+                  ? <span className="sd-score" title="発行時のスコア">{l.total}<small>点</small></span>
+                  : <span className="sd-undiag">未診断</span>}
               </div>
               <div className="sd-lead-meta">
-                <span className={`sd-rank r-${l.rank}`}>{l.rank}ランク</span>
+                {hasDiagnosis(l)
+                  ? <span className={`sd-rank r-${l.rank}`}>{l.rank}ランク</span>
+                  : <span className="sd-undiag-chip">Place IDのみ発行</span>}
                 <span className="sd-date">{fmtDate(l.createdAt)} 発行</span>
               </div>
 
@@ -192,6 +209,9 @@ export function SalesDashboard({
                 >
                   <Icon name="chat" size={14} />クチコミPOP
                 </button>
+                <a className="sd-act" href={`/new?edit=${l.id}`}>
+                  <Icon name="list" size={14} />{hasDiagnosis(l) ? "編集" : "診断追加"}
+                </a>
                 <button className="sd-act sd-del" onClick={() => remove(l.id, l.storeName)} type="button">
                   <Icon name="slash" size={14} />削除
                 </button>

@@ -19,12 +19,21 @@ const CAT_ICON: Record<CategoryKey, IconName> = {
 const DESC_MAX = 750;
 type Answers = V3Answers;
 
-export function IntakeForm({ salesName }: { salesName: string }) {
-  const [storeName, setStoreName] = useState("");
-  const [query, setQuery] = useState("");
-  const [placeId, setPlaceId] = useState("");
-  const [descText, setDescText] = useState("");
-  const [answers, setAnswers] = useState<Answers>({});
+/** 編集モードの初期値（既存リードを訪問後に追記/編集するとき）。 */
+export interface IntakeInitial {
+  id: string;
+  storeName: string;
+  placeId: string;
+  descText: string;
+  answers: V3Answers;
+}
+
+export function IntakeForm({ salesName, initial }: { salesName: string; initial?: IntakeInitial }) {
+  const editing = !!initial;
+  const [storeName, setStoreName] = useState(initial?.storeName ?? "");
+  const [placeId, setPlaceId] = useState(initial?.placeId ?? "");
+  const [descText, setDescText] = useState(initial?.descText ?? "");
+  const [answers, setAnswers] = useState<Answers>(initial?.answers ?? {});
   const [step, setStep] = useState<"input" | "issuing" | "issued">("input");
   const [issued, setIssued] = useState<{ slug: string; url: string } | null>(null);
   const [qr, setQr] = useState("");
@@ -64,33 +73,48 @@ export function IntakeForm({ salesName }: { salesName: string }) {
     () => Object.values(answers).reduce((n, c) => n + Object.keys(c || {}).length, 0),
     [answers],
   );
-  const canIssue = storeName.trim().length > 0 && answeredCount > 0;
+  // 店名があり、かつ「診断を1つ以上入力」または「Place ID入力済み」なら発行できる。
+  const canIssue = storeName.trim().length > 0 && (answeredCount > 0 || placeId.trim().length > 0);
 
   async function issue() {
     if (!canIssue) return;
     setStep("issuing");
     setError("");
     try {
-      const res = await fetch("/api/leads", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ storeName, answers, query, placeId, descText, keywords: query }),
-      });
-      const data = await res.json();
-      if (!res.ok || !data?.slug) throw new Error(data?.error || "発行に失敗しました。");
-      const url = `${location.origin}/r/${data.slug}`;
-      setIssued({ slug: data.slug, url });
+      const body = JSON.stringify({ storeName, answers, placeId, descText });
+      let slug: string;
+      if (editing && initial) {
+        const res = await fetch(`/api/leads/${initial.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body,
+        });
+        const data = await res.json();
+        if (!res.ok || !data?.lead?.slug) throw new Error(data?.error || "更新に失敗しました。");
+        slug = data.lead.slug;
+      } else {
+        const res = await fetch("/api/leads", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body,
+        });
+        const data = await res.json();
+        if (!res.ok || !data?.slug) throw new Error(data?.error || "発行に失敗しました。");
+        slug = data.slug;
+      }
+      const url = `${location.origin}/r/${slug}`;
+      setIssued({ slug, url });
       const png = await QRCode.toDataURL(url, { width: 480, margin: 1 });
       setQr(png);
       setStep("issued");
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "発行に失敗しました。");
+      setError(e instanceof Error ? e.message : "処理に失敗しました。");
       setStep("input");
     }
   }
 
   function reset() {
-    setStoreName(""); setQuery(""); setDescText(""); setAnswers({});
+    setStoreName(""); setPlaceId(""); setDescText(""); setAnswers({});
     setIssued(null); setQr(""); setStep("input"); window.scrollTo(0, 0);
   }
 
@@ -119,7 +143,7 @@ export function IntakeForm({ salesName }: { salesName: string }) {
         <Appbar salesName={salesName} />
         <div className="in-issue">
           <div className="in-done-badge"><Icon name="check" size={30} /></div>
-          <p className="in-done-h">診断を発行しました</p>
+          <p className="in-done-h">{editing ? "更新しました" : "診断を発行しました"}</p>
           <p className="in-done-s">{storeName}｜{scored.total}点・{scored.rank}ランク</p>
           {qr && <div className="in-qr"><img src={qr} alt="診断結果QR" /></div>}
           <div className="in-urlpill">{issued.url}</div>
@@ -138,16 +162,16 @@ export function IntakeForm({ salesName }: { salesName: string }) {
   return (
     <div className="in-wrap">
       <Appbar salesName={salesName} />
-      <h1 className="in-h">新規診断を発行</h1>
-      <p className="in-hsub">訪問前に、お客様のGoogleビジネスプロフィールの状況を入力してください。</p>
+      <h1 className="in-h">{editing ? "診断を編集・追加" : "新規診断を発行"}</h1>
+      <p className="in-hsub">
+        {editing
+          ? "訪問後の内容で更新できます。Place IDだけ先に発行した店舗は、ここで診断を追記してください。"
+          : "お客様のGoogleビジネスプロフィールの状況を入力してください。診断かPlace IDのどちらかがあれば発行できます。"}
+      </p>
 
       <div className="in-field">
         <label>店舗名 <span style={{ color: "var(--g-red)" }}>*</span></label>
         <input className="in-input" value={storeName} onChange={(e) => setStoreName(e.target.value)} placeholder="例：○○○○店" />
-      </div>
-      <div className="in-field">
-        <label>狙う検索キーワード（任意）</label>
-        <input className="in-input" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="例：居酒屋、ジム、○○駅 など" />
       </div>
       <div className="in-field">
         <label>Google Place ID（任意／クチコミPOP用）</label>
@@ -186,9 +210,13 @@ export function IntakeForm({ salesName }: { salesName: string }) {
       <div className="in-cta">
         <button className="btn" onClick={issue} disabled={!canIssue}>
           <Icon name="spark" size={18} />
-          診断を発行する（現在 {scored.total}点・{scored.rank}）
+          {editing ? "更新する" : "発行する"}{answeredCount > 0 ? `（現在 ${scored.total}点・${scored.rank}）` : "（Place IDのみ）"}
         </button>
-        <p className="note">発行後にお客様へURL/QRで共有できます。ステータスは後から変更できます。</p>
+        <p className="note">
+          {answeredCount > 0
+            ? "発行後にお客様へURL/QRで共有できます。クチコミPOPはPlace IDを設定すると発行できます。"
+            : "診断を入力せずPlace IDだけでも発行できます（クチコミPOP先行発行）。診断は後から追加できます。"}
+        </p>
       </div>
     </div>
   );

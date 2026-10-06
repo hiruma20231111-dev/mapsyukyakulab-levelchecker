@@ -80,3 +80,10 @@
 .sd-fmodal-frame { flex: 1; width: 100%; border: 0; background: #fff; }
 .sd-fmodal-foot { display: flex; gap: 8px; justify-content: flex-end; align-items: center; padding: 10px 14px; border-top: 1px solid var(--line,#e3e9ef); flex-wrap: wrap; }
 .sd-fmodal-foot .btn { flex: 0 0 auto; }
+
+/* 訪問後フォームリンク / 未診断表示 */
+.sd-lead-name { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.sd-visit { font-size: 10.5px; font-weight: 700; color: var(--g-blue,#4285f4); text-decoration: none; border: 1px solid var(--g-blue,#4285f4); border-radius: 999px; padding: 2px 9px; white-space: nowrap; }
+.sd-visit:hover { background: var(--g-blue,#4285f4); color: #fff; }
+.sd-undiag { font-size: 12px; font-weight: 800; color: var(--muted,#8a97a3); }
+.sd-undiag-chip { font-size: 11px; font-weight: 700; color: var(--muted,#8a97a3); background: #eef2f6; border-radius: 999px; padding: 2px 9px; }
