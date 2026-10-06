@@ -41,9 +41,14 @@
 .sd-st:hover{ border-color:var(--accent); }
 .sd-st:disabled{ opacity:.6; }
 
-.sd-actions{ display:flex; gap:6px; border-top:1px dashed var(--line); padding-top:9px; }
-.sd-act{ flex:1; display:inline-flex; align-items:center; justify-content:center; gap:4px; font-size:11px; font-weight:800; color:var(--accent-deep); background:var(--accent-soft); border:0; border-radius:8px; padding:8px 4px; cursor:pointer; font-family:inherit; text-decoration:none; }
+.sd-actions{ display:flex; gap:7px; border-top:1px dashed var(--line); padding-top:10px; }
+.sd-act{ flex:1; display:inline-flex; align-items:center; justify-content:center; gap:5px; white-space:nowrap; font-size:11.5px; font-weight:800; color:var(--accent-deep); background:var(--accent-soft); border:0; border-radius:9px; padding:10px 6px; cursor:pointer; font-family:inherit; text-decoration:none; }
 .sd-act.sd-del{ color:#a23b30; background:#fdeceb; }
+/* 補助アクション（編集・削除）は下段に小さめで */
+.sd-actions2{ display:flex; gap:7px; margin-top:7px; }
+.sd-actions2 .sd-act{ flex:1; }
+.sd-act-sub{ font-size:10.5px; font-weight:700; padding:7px 6px; border-radius:8px; background:var(--bg,#f5f8fb); color:var(--muted,#8a97a3); border:1px solid var(--line); }
+.sd-act-sub.sd-del{ background:#fdeceb; color:#a23b30; border-color:#f4cfcb; }
 
 .sd-modal{ position:fixed; inset:0; background:rgba(11,36,64,.5); display:grid; place-items:center; z-index:20; padding:24px; }
 .sd-modal-in{ background:var(--surface); border-radius:16px; padding:20px; width:100%; max-width:320px; text-align:center; }

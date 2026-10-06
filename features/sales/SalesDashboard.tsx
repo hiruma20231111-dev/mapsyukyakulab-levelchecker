@@ -220,14 +220,14 @@ export function SalesDashboard({
 
               <div className="sd-actions">
                 <button className="sd-act" onClick={() => setFrame({ title: l.storeName, src: `/r/${l.slug}`, kind: "result" })} type="button">
-                  <Icon name="search" size={14} />{DIAGNOSIS_ENABLED ? "結果" : "お客様ページ"}
+                  <Icon name="search" size={15} />{DIAGNOSIS_ENABLED ? "結果" : "お客様ページ"}
                 </button>
                 <button className="sd-act" onClick={() => showQr(l.slug, l.storeName)} type="button">
-                  <Icon name="link" size={14} />QR / URL
+                  <Icon name="link" size={15} />QR / URL
                 </button>
                 {DIAGNOSIS_ENABLED && (
                   <button className="sd-act" onClick={() => setFrame({ title: `${l.storeName}｜診断PDF`, src: `/r/${l.slug}/print?embed=1`, kind: "print" })} type="button">
-                    <Icon name="book" size={14} />PDF
+                    <Icon name="book" size={15} />PDF
                   </button>
                 )}
                 <button
@@ -238,13 +238,15 @@ export function SalesDashboard({
                   }}
                   type="button"
                 >
-                  <Icon name="chat" size={14} />クチコミPOP
+                  <Icon name="chat" size={15} />クチコミPOP
                 </button>
-                <a className="sd-act" href={`/new?edit=${l.id}`}>
-                  <Icon name="list" size={14} />{DIAGNOSIS_ENABLED ? (hasDiagnosis(l) ? "編集" : "診断追加") : "編集"}
+              </div>
+              <div className="sd-actions2">
+                <a className="sd-act sd-act-sub" href={`/new?edit=${l.id}`}>
+                  <Icon name="list" size={13} />{DIAGNOSIS_ENABLED ? (hasDiagnosis(l) ? "編集" : "診断追加") : "編集"}
                 </a>
-                <button className="sd-act sd-del" onClick={() => remove(l.id, l.storeName)} type="button">
-                  <Icon name="slash" size={14} />削除
+                <button className="sd-act sd-act-sub sd-del" onClick={() => remove(l.id, l.storeName)} type="button">
+                  <Icon name="slash" size={13} />削除
                 </button>
               </div>
 
