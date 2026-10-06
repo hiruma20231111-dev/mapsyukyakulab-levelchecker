@@ -162,6 +162,7 @@
 .rs-cta-owner{ display:flex; flex-direction:column; gap:8px; }
 .rs-cta-owner .btn{ text-decoration:none; }
 .rs-cta-owner .btn.btn-line{ background:#06c755; color:#fff; }
+.rs-cta-owner .btn.btn-form{ background:var(--g-blue,#4285f4); color:#fff; }
 .rs-cta-owner .btn.ghost{ background:var(--surface); color:var(--accent-deep); border:1.5px solid var(--accent); padding:12px; font-size:13.5px; }
 
 /* =========================================================
@@ -279,6 +280,7 @@
 /* 診断OFF時の無料トライアル表示（お客様結果ページ） */
 .rs-herotxt-solo { text-align: center; padding: 6px 4px 2px; }
 .rs-trial { padding: 4px 0 8px; }
-.rs-flyer-card { display: block; width: 100%; border: 1px solid var(--line,#e3e9ef); border-radius: 14px; overflow: hidden; background: #fff; cursor: pointer; padding: 0; box-shadow: 0 6px 20px rgba(20,40,60,.1); }
-.rs-flyer-card img { display: block; width: 100%; height: auto; }
-.rs-flyer-cta { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; font-weight: 800; color: #fff; background: var(--g-blue,#4285f4); padding: 12px; }
+/* チラシ2ページを直接横スワイプ（インライン・ページスナップ） */
+.rs-flyer-slider { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; padding: 2px 2px 8px; scrollbar-width: thin; }
+.rs-flyer-slide { flex: 0 0 88%; width: 88%; height: auto; scroll-snap-align: center; border-radius: 12px; border: 1px solid var(--line,#e3e9ef); box-shadow: 0 6px 20px rgba(20,40,60,.1); }
+.rs-flyer-hint { text-align: center; font-size: 11px; color: var(--muted,#8a97a3); margin-top: 4px; }

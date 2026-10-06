@@ -3,10 +3,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Icon } from "@/design/icons";
 import { DIAGNOSIS_ENABLED } from "@/lib/config";
-import { FlyerModal, FLYER_PAGES } from "@/features/common/FlyerModal";
+import { FLYER_PAGES } from "@/features/common/FlyerModal";
 import type { CategoryView, ResultView } from "./build";
 
 const ORB_CIRC = 640.88; // 2π*102（総合スコアオーブのリング）
+/** 無料トライアルの申込フォーム（LINE以外の導線）。 */
+const TRIAL_FORM_URL = "https://apply.meo-agent.can-ly.com/free-trial/phone";
 const prefersReduced = () =>
   typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
@@ -213,7 +215,6 @@ export function ResultScreen({
 }) {
   const [open, setOpen] = useState<CategoryView | null>(null);
   const [popFrame, setPopFrame] = useState<string | null>(null);
-  const [flyerOpen, setFlyerOpen] = useState(false);
   const [num, setNum] = useState(0);
   const [orbOff, setOrbOff] = useState(ORB_CIRC);
   const [today, setToday] = useState("");
@@ -253,19 +254,16 @@ export function ResultScreen({
         <div className="rs-body">
           <section className="rs-trial">
             <div className="rs-sec-label"><Icon name="spark" size={14} />無料トライアルのご案内</div>
-            <button type="button" className="rs-flyer-card" onClick={() => setFlyerOpen(true)}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={FLYER_PAGES[0]} alt="無料トライアルのご案内" />
-              <span className="rs-flyer-cta"><Icon name="book" size={15} />タップで詳しく見る（2ページ）</span>
-            </button>
+            <div className="rs-flyer-slider">
+              {FLYER_PAGES.map((src, i) => (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img key={i} src={src} alt={`無料トライアルチラシ ${i + 1}ページ目`} className="rs-flyer-slide" />
+              ))}
+            </div>
+            <div className="rs-flyer-hint">← スワイプで2ページ見られます →</div>
           </section>
         </div>
         <div className="rs-cta rs-cta-owner">
-          {lineUrl ? (
-            <a className="btn btn-line" href={lineUrl} target="_blank" rel="noopener noreferrer">
-              <Icon name="chat" size={18} />LINEで無料トライアルに申し込む
-            </a>
-          ) : null}
           {slug && popReady ? (
             <div className="rs-pop">
               <div className="rs-pop-lab"><Icon name="chat" size={14} />クチコミ収集POP（印刷してお店に置けます）</div>
@@ -275,8 +273,15 @@ export function ResultScreen({
               </div>
             </div>
           ) : null}
+          {lineUrl ? (
+            <a className="btn btn-line" href={lineUrl} target="_blank" rel="noopener noreferrer">
+              <Icon name="chat" size={18} />LINEで無料トライアルに申し込む
+            </a>
+          ) : null}
+          <a className="btn btn-form" href={TRIAL_FORM_URL} target="_blank" rel="noopener noreferrer">
+            <Icon name="list" size={18} />フォームから申し込む
+          </a>
         </div>
-        <FlyerModal open={flyerOpen} onClose={() => setFlyerOpen(false)} />
         {popFrame && (
           <div className="rs-fmodal" onClick={() => setPopFrame(null)}>
             <div className="rs-fmodal-in" onClick={(e) => e.stopPropagation()}>
@@ -387,11 +392,6 @@ export function ResultScreen({
         </div>
       ) : (
         <div className="rs-cta rs-cta-owner">
-          {lineUrl ? (
-            <a className="btn btn-line" href={lineUrl} target="_blank" rel="noopener noreferrer">
-              <Icon name="chat" size={18} />LINEで無料トライアルに申し込む
-            </a>
-          ) : null}
           {slug && popReady ? (
             <div className="rs-pop">
               <div className="rs-pop-lab"><Icon name="chat" size={14} />クチコミ収集POP（印刷してお店に置けます）</div>
@@ -405,6 +405,14 @@ export function ResultScreen({
               </div>
             </div>
           ) : null}
+          {lineUrl ? (
+            <a className="btn btn-line" href={lineUrl} target="_blank" rel="noopener noreferrer">
+              <Icon name="chat" size={18} />LINEで無料トライアルに申し込む
+            </a>
+          ) : null}
+          <a className="btn btn-form" href={TRIAL_FORM_URL} target="_blank" rel="noopener noreferrer">
+            <Icon name="list" size={18} />フォームから申し込む
+          </a>
           <p className="note">無料トライアルで、これらの改善を専門スタッフが一緒に進められます。</p>
         </div>
       )}
