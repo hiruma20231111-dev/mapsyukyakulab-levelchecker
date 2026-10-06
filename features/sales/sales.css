@@ -87,3 +87,9 @@
 .sd-visit:hover { background: var(--g-blue,#4285f4); color: #fff; }
 .sd-undiag { font-size: 12px; font-weight: 800; color: var(--muted,#8a97a3); }
 .sd-undiag-chip { font-size: 11px; font-weight: 700; color: var(--muted,#8a97a3); background: #eef2f6; border-radius: 999px; padding: 2px 9px; }
+
+/* 店舗情報行（Googleマップリンク／住所コピー） */
+.sd-info2 { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.sd-chipbtn { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; color: var(--g-blue,#4285f4); text-decoration: none; border: 1px solid var(--line,#e3e9ef); border-radius: 999px; padding: 4px 10px; background: #fff; cursor: pointer; white-space: nowrap; }
+.sd-chipbtn:hover { border-color: var(--g-blue,#4285f4); }
+.sd-addr { font-size: 11px; color: var(--muted,#8a97a3); flex: 1 1 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

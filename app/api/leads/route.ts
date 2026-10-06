@@ -26,6 +26,7 @@ export async function POST(req: Request) {
     storeName,
     answers,
     placeId: normalizePlaceId(b?.placeId) ?? undefined,
+    address: typeof b?.address === "string" && b.address.trim() ? b.address.trim() : undefined,
     query: typeof b?.query === "string" ? b.query : undefined,
     weights: b?.weights && typeof b.weights === "object" ? b.weights : undefined,
     descText: typeof b?.descText === "string" ? b.descText : undefined,

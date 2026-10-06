@@ -31,6 +31,11 @@ export function writeReviewUrl(placeId: string): string {
   return `https://search.google.com/local/writereview?placeid=${encodeURIComponent(placeId)}`;
 }
 
+/** Place ID から店舗のGoogleマップ掲載ページ（公開ページ）URLを作る。 */
+export function mapsPlaceUrl(placeId: string): string {
+  return `https://www.google.com/maps/place/?q=place_id:${encodeURIComponent(placeId)}`;
+}
+
 /**
  * POP テンプレの青枠にQRを合成するための配置。言語ごとにデザイン（サイズ・枠位置）が異なる。
  * 座標は「左上原点・下向き y」（pt）。pdf-lib は左下原点なので描画時に変換する。

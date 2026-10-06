@@ -26,12 +26,14 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
   const hasEdit =
     (b?.answers && typeof b.answers === "object") ||
     typeof b?.storeName === "string" ||
-    typeof b?.descText === "string";
+    typeof b?.descText === "string" ||
+    typeof b?.address === "string";
   if (hasEdit) {
-    const patch: { storeName?: string; answers?: typeof lead.answers; descText?: string; placeId?: string } = {};
+    const patch: { storeName?: string; answers?: typeof lead.answers; descText?: string; placeId?: string; address?: string } = {};
     if (typeof b.storeName === "string") patch.storeName = b.storeName;
     if (b.answers && typeof b.answers === "object") patch.answers = b.answers;
     if (typeof b.descText === "string") patch.descText = b.descText;
+    if (typeof b.address === "string") patch.address = b.address;
     if (typeof b.placeId === "string") {
       const raw = b.placeId.trim();
       if (raw === "") patch.placeId = "";

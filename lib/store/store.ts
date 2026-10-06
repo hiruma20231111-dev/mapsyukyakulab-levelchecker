@@ -151,6 +151,7 @@ export interface CreateLeadInput {
   storeName: string;
   answers: Lead["answers"];
   placeId?: string;
+  address?: string;
   query?: string;
   weights?: Lead["weights"];
   descText?: string;
@@ -167,6 +168,7 @@ export async function createLead(input: CreateLeadInput): Promise<Lead> {
     storeName: input.storeName.trim() || "店舗名未設定",
     answers: input.answers,
     placeId: input.placeId,
+    address: input.address,
     query: input.query,
     weights: input.weights,
     descText: input.descText,
@@ -244,7 +246,7 @@ export async function updateLeadStatus(id: string, status: LeadStatus): Promise<
  *  → クチコミPOP先行発行のあと、訪問後に診断を追加/編集する用途。 */
 export async function updateLead(
   id: string,
-  patch: { storeName?: string; answers?: Lead["answers"]; placeId?: string; descText?: string },
+  patch: { storeName?: string; answers?: Lead["answers"]; placeId?: string; address?: string; descText?: string },
 ): Promise<Lead | null> {
   const cur = await getLead(id);
   if (!cur) return null;
@@ -255,6 +257,7 @@ export async function updateLead(
     storeName: (patch.storeName?.trim() || cur.storeName),
     answers,
     placeId: patch.placeId !== undefined ? (patch.placeId || undefined) : cur.placeId,
+    address: patch.address !== undefined ? (patch.address.trim() || undefined) : cur.address,
     descText: patch.descText !== undefined ? patch.descText : cur.descText,
     total: s.total,
     rank: s.rank,

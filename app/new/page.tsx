@@ -21,6 +21,7 @@ export default async function NewDiagnosisPage({ searchParams }: { searchParams:
         id: lead.id,
         storeName: lead.storeName,
         placeId: lead.placeId ?? "",
+        address: lead.address ?? "",
         descText: lead.descText ?? "",
         answers: lead.answers ?? {},
       };

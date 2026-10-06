@@ -4,6 +4,7 @@ import { useMemo, useRef, useState } from "react";
 import QRCode from "qrcode";
 import { Icon } from "@/design/icons";
 import { PlaceIdHelp } from "@/features/common/PlaceIdHelp";
+import { mapsPlaceUrl } from "@/lib/domain/review";
 import { DIAGNOSIS_ENABLED } from "@/lib/config";
 import type { Lead, LeadStatus } from "@/lib/store/types";
 import { STATUS_LABEL, STATUS_ORDER, STATUS_COLOR } from "@/lib/store/types";
@@ -40,6 +41,16 @@ export function SalesDashboard({
   const [popFor, setPopFor] = useState<string>("");
   const [pidDraft, setPidDraft] = useState<Record<string, string>>({});
   const [pidMsg, setPidMsg] = useState<string>("");
+  const [copiedAddr, setCopiedAddr] = useState<string>("");
+
+  async function copyAddr(l: Lead) {
+    if (!l.address) return;
+    try {
+      await navigator.clipboard.writeText(l.address);
+      setCopiedAddr(l.id);
+      setTimeout(() => setCopiedAddr(""), 1600);
+    } catch { /* noop */ }
+  }
   // iframeモーダル（結果確認 / 診断PDF / クチコミPOP をタブを増やさずその場で表示）
   const [frame, setFrame] = useState<{ title: string; src: string; kind: "result" | "print" | "pop" } | null>(null);
   const frameRef = useRef<HTMLIFrameElement | null>(null);
@@ -174,6 +185,23 @@ export function SalesDashboard({
                   : <span className="sd-undiag-chip">Place IDのみ発行</span>)}
                 <span className="sd-date">{fmtDate(l.createdAt)} 発行</span>
               </div>
+
+              {(l.placeId || l.address) && (
+                <div className="sd-info2">
+                  {l.placeId && (
+                    <a className="sd-chipbtn" href={mapsPlaceUrl(l.placeId)} target="_blank" rel="noopener noreferrer">
+                      <Icon name="pin" size={13} />Googleマップ
+                    </a>
+                  )}
+                  {l.address && (
+                    <button className="sd-chipbtn" type="button" onClick={() => copyAddr(l)}>
+                      <Icon name={copiedAddr === l.id ? "check" : "link"} size={13} />
+                      {copiedAddr === l.id ? "コピーしました" : "住所をコピー"}
+                    </button>
+                  )}
+                  {l.address && <span className="sd-addr" title={l.address}>{l.address}</span>}
+                </div>
+              )}
 
               <div className="sd-status-row">
                 {STATUS_ORDER.map((s) => (

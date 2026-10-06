@@ -25,6 +25,7 @@ export interface IntakeInitial {
   id: string;
   storeName: string;
   placeId: string;
+  address: string;
   descText: string;
   answers: V3Answers;
 }
@@ -33,6 +34,7 @@ export function IntakeForm({ salesName, initial }: { salesName: string; initial?
   const editing = !!initial;
   const [storeName, setStoreName] = useState(initial?.storeName ?? "");
   const [placeId, setPlaceId] = useState(initial?.placeId ?? "");
+  const [address, setAddress] = useState(initial?.address ?? "");
   const [descText, setDescText] = useState(initial?.descText ?? "");
   const [answers, setAnswers] = useState<Answers>(initial?.answers ?? {});
   const [step, setStep] = useState<"input" | "issuing" | "issued">("input");
@@ -85,7 +87,7 @@ export function IntakeForm({ salesName, initial }: { salesName: string; initial?
     setStep("issuing");
     setError("");
     try {
-      const body = JSON.stringify({ storeName, answers, placeId, descText });
+      const body = JSON.stringify({ storeName, answers, placeId, address, descText });
       let slug: string;
       if (editing && initial) {
         const res = await fetch(`/api/leads/${initial.id}`, {
@@ -118,7 +120,7 @@ export function IntakeForm({ salesName, initial }: { salesName: string; initial?
   }
 
   function reset() {
-    setStoreName(""); setPlaceId(""); setDescText(""); setAnswers({});
+    setStoreName(""); setPlaceId(""); setAddress(""); setDescText(""); setAnswers({});
     setIssued(null); setQr(""); setStep("input"); window.scrollTo(0, 0);
   }
 
@@ -188,6 +190,11 @@ export function IntakeForm({ salesName, initial }: { salesName: string; initial?
         <input className="in-input" value={placeId} onChange={(e) => setPlaceId(e.target.value)} placeholder="例：ChIJ... （Place ID Finderで取得）" />
         <p className="in-fieldnote">このPlace IDから、店舗のクチコミ収集POP（日本語/英語）をPDFで発行できます。後からダッシュボードでも登録できます。</p>
         <PlaceIdHelp />
+      </div>
+      <div className="in-field">
+        <label>住所（任意）</label>
+        <input className="in-input" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="例：大阪市中央区○○1-2-3" />
+        <p className="in-fieldnote">入力しておくと、ダッシュボードから「住所をコピー」できます。</p>
       </div>
 
       {DIAGNOSIS_ENABLED && DIAG_CATEGORIES.map((cat) => {

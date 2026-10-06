@@ -54,6 +54,8 @@ export interface Lead {
   answers: V3Answers;
   /** 店舗の Google Place ID。クチコミ収集POPのQR（クチコミ投稿リンク）に使う。未設定ならPOPは出さない。 */
   placeId?: string;
+  /** 店舗の住所（任意）。ダッシュボードでコピーできる。 */
+  address?: string;
   query?: string;
   weights?: Partial<Record<CategoryKey, number>>;
   descText?: string;
