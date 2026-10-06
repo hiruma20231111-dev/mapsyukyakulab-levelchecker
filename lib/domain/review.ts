@@ -31,9 +31,14 @@ export function writeReviewUrl(placeId: string): string {
   return `https://search.google.com/local/writereview?placeid=${encodeURIComponent(placeId)}`;
 }
 
-/** Place ID から店舗のGoogleマップ掲載ページ（公開ページ）URLを作る。 */
-export function mapsPlaceUrl(placeId: string): string {
-  return `https://www.google.com/maps/place/?q=place_id:${encodeURIComponent(placeId)}`;
+/**
+ * Place ID から店舗のGoogleマップ掲載ページを開くURLを作る。
+ * Google公式の Maps URLs API 形式。query（店名など）は必須で、PC・スマホアプリ両方で
+ * 確実に該当店舗を開ける（place_id が効かない場合のフォールバックにもなる）。
+ */
+export function mapsPlaceUrl(placeId: string, query?: string): string {
+  const q = encodeURIComponent(query && query.trim() ? query.trim() : placeId);
+  return `https://www.google.com/maps/search/?api=1&query=${q}&query_place_id=${encodeURIComponent(placeId)}`;
 }
 
 /**

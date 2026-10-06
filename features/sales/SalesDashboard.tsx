@@ -189,7 +189,7 @@ export function SalesDashboard({
               {(l.placeId || l.address) && (
                 <div className="sd-info2">
                   {l.placeId && (
-                    <a className="sd-chipbtn" href={mapsPlaceUrl(l.placeId)} target="_blank" rel="noopener noreferrer">
+                    <a className="sd-chipbtn" href={mapsPlaceUrl(l.placeId, l.address || l.storeName)} target="_blank" rel="noopener noreferrer">
                       <Icon name="pin" size={13} />Googleマップ
                     </a>
                   )}
