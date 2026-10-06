@@ -339,11 +339,11 @@ export function ResultScreen({
             <div className="rs-pop">
               <div className="rs-pop-lab"><Icon name="chat" size={14} />クチコミ収集POP（印刷してお店に置けます）</div>
               <div className="rs-pop-btns">
-                <a className="btn ghost" href={`/r/${slug}/pop/ja`} target="_blank" rel="noopener noreferrer">
-                  <Icon name="book" size={15} />日本語版をPDFで保存
+                <a className="btn ghost" href={`/r/${slug}/pop/ja/preview`} target="_blank" rel="noopener noreferrer">
+                  <Icon name="book" size={15} />日本語版を見る
                 </a>
-                <a className="btn ghost" href={`/r/${slug}/pop/en`} target="_blank" rel="noopener noreferrer">
-                  <Icon name="book" size={15} />English PDF
+                <a className="btn ghost" href={`/r/${slug}/pop/en/preview`} target="_blank" rel="noopener noreferrer">
+                  <Icon name="book" size={15} />English
                 </a>
               </div>
             </div>

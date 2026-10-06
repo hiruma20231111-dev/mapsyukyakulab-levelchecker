@@ -214,8 +214,8 @@ export function SalesDashboard({
                   </div>
                   {l.placeId && (
                     <div className="sd-pop-dls">
-                      <a className="sd-act" href={`/r/${l.slug}/pop/ja`} target="_blank" rel="noopener noreferrer"><Icon name="book" size={14} />POP 日本語</a>
-                      <a className="sd-act" href={`/r/${l.slug}/pop/en`} target="_blank" rel="noopener noreferrer"><Icon name="book" size={14} />POP English</a>
+                      <a className="sd-act" href={`/r/${l.slug}/pop/ja/preview`} target="_blank" rel="noopener noreferrer"><Icon name="book" size={14} />POP 日本語</a>
+                      <a className="sd-act" href={`/r/${l.slug}/pop/en/preview`} target="_blank" rel="noopener noreferrer"><Icon name="book" size={14} />POP English</a>
                     </div>
                   )}
                 </div>

@@ -45,12 +45,39 @@ export interface PopPlacement {
   cyTop: number;
   /** 合成する QR の一辺（pt）。 */
   qrSize: number;
+  /** テンプレのページ幅（pt）。 */
+  pageW: number;
+  /** テンプレのページ高さ（pt）。 */
+  pageH: number;
 }
 
 export const POP_PLACEMENT: Record<PopLang, PopPlacement> = {
-  ja: { cx: 421.0, cyTop: 722.2, qrSize: 300 },
-  en: { cx: 301.4, cyTop: 528.0, qrSize: 215 },
+  ja: { cx: 421.0, cyTop: 722.2, qrSize: 300, pageW: 842.25, pageH: 1190.25 },
+  en: { cx: 301.4, cyTop: 528.0, qrSize: 215, pageW: 595.5, pageH: 842.25 },
 };
 
 /** 枠内の説明文（「ここにQRコードを…」/「Please place the QR code here」）を隠す白地の余白（pt）。 */
 export const POP_QR_BG_PAD = 26;
+
+/** プレビュー画像（テンプレPNG）上に QR と白地を重ねるための位置（ページに対する%）。 */
+export function popPreviewGeometry(lang: PopLang) {
+  const { cx, cyTop, qrSize, pageW, pageH } = POP_PLACEMENT[lang];
+  const bg = qrSize + POP_QR_BG_PAD;
+  const pct = (v: number, base: number) => (v / base) * 100;
+  return {
+    pageW,
+    pageH,
+    qr: {
+      left: pct(cx - qrSize / 2, pageW),
+      top: pct(cyTop - qrSize / 2, pageH),
+      w: pct(qrSize, pageW),
+      h: pct(qrSize, pageH),
+    },
+    bg: {
+      left: pct(cx - bg / 2, pageW),
+      top: pct(cyTop - bg / 2, pageH),
+      w: pct(bg, pageW),
+      h: pct(bg, pageH),
+    },
+  };
+}
