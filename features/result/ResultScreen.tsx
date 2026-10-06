@@ -331,11 +331,6 @@ export function ResultScreen({
               <Icon name="chat" size={18} />LINEで無料トライアルに申し込む
             </a>
           ) : null}
-          {slug ? (
-            <a className="btn ghost" href={`/r/${slug}/print`} target="_blank" rel="noopener noreferrer">
-              <Icon name="book" size={16} />診断結果をPDFで保存・印刷
-            </a>
-          ) : null}
           {slug && popReady ? (
             <div className="rs-pop">
               <div className="rs-pop-lab"><Icon name="chat" size={14} />クチコミ収集POP（印刷してお店に置けます）</div>
