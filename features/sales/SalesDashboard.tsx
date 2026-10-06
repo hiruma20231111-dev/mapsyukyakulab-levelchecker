@@ -1,6 +1,6 @@
 "use client";
 // 営業ダッシュボード：今月の発行数・トライアル実施率・目標進捗＋診断一覧（ステータス変更・共有・PDF）。
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import QRCode from "qrcode";
 import { Icon } from "@/design/icons";
 import { PlaceIdHelp } from "@/features/common/PlaceIdHelp";
@@ -29,6 +29,9 @@ export function SalesDashboard({
   const [popFor, setPopFor] = useState<string>("");
   const [pidDraft, setPidDraft] = useState<Record<string, string>>({});
   const [pidMsg, setPidMsg] = useState<string>("");
+  // iframeモーダル（結果確認 / 診断PDF / クチコミPOP をタブを増やさずその場で表示）
+  const [frame, setFrame] = useState<{ title: string; src: string; kind: "result" | "print" | "pop" } | null>(null);
+  const frameRef = useRef<HTMLIFrameElement | null>(null);
 
   async function savePlaceId(id: string) {
     const value = (pidDraft[id] ?? "").trim();
@@ -170,15 +173,15 @@ export function SalesDashboard({
               </div>
 
               <div className="sd-actions">
-                <a className="sd-act" href={`/r/${l.slug}`} target="_blank" rel="noopener noreferrer">
+                <button className="sd-act" onClick={() => setFrame({ title: l.storeName, src: `/r/${l.slug}`, kind: "result" })} type="button">
                   <Icon name="search" size={14} />結果
-                </a>
+                </button>
                 <button className="sd-act" onClick={() => showQr(l.slug, l.storeName)} type="button">
                   <Icon name="link" size={14} />QR / URL
                 </button>
-                <a className="sd-act" href={`/r/${l.slug}/print`} target="_blank" rel="noopener noreferrer">
+                <button className="sd-act" onClick={() => setFrame({ title: `${l.storeName}｜診断PDF`, src: `/r/${l.slug}/print?embed=1`, kind: "print" })} type="button">
                   <Icon name="book" size={14} />PDF
-                </a>
+                </button>
                 <button
                   className={`sd-act ${l.placeId ? "sd-act-on" : ""}`}
                   onClick={() => {
@@ -214,8 +217,8 @@ export function SalesDashboard({
                   </div>
                   {l.placeId && (
                     <div className="sd-pop-dls">
-                      <a className="sd-act" href={`/r/${l.slug}/pop/ja/preview`} target="_blank" rel="noopener noreferrer"><Icon name="book" size={14} />POP 日本語</a>
-                      <a className="sd-act" href={`/r/${l.slug}/pop/en/preview`} target="_blank" rel="noopener noreferrer"><Icon name="book" size={14} />POP English</a>
+                      <button className="sd-act" onClick={() => setFrame({ title: `${l.storeName}｜クチコミPOP 日本語`, src: `/r/${l.slug}/pop/ja/preview`, kind: "pop" })} type="button"><Icon name="book" size={14} />POP 日本語</button>
+                      <button className="sd-act" onClick={() => setFrame({ title: `${l.storeName}｜クチコミPOP English`, src: `/r/${l.slug}/pop/en/preview`, kind: "pop" })} type="button"><Icon name="book" size={14} />POP English</button>
                     </div>
                   )}
                 </div>
@@ -234,6 +237,27 @@ export function SalesDashboard({
             <div className="sd-modal-btns">
               <button className="btn" onClick={() => { navigator.clipboard?.writeText(qr.url); }}>URLをコピー</button>
               <button className="btn ghost" onClick={() => setQr(null)}>閉じる</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {frame && (
+        <div className="sd-fmodal" onClick={() => setFrame(null)}>
+          <div className="sd-fmodal-in" onClick={(e) => e.stopPropagation()}>
+            <div className="sd-fmodal-head">
+              <span className="sd-fmodal-title">{frame.title}</span>
+              <button className="sd-fmodal-x" onClick={() => setFrame(null)} aria-label="閉じる" type="button">✕</button>
+            </div>
+            <iframe ref={frameRef} className="sd-fmodal-frame" src={frame.src} title={frame.title} />
+            <div className="sd-fmodal-foot">
+              {frame.kind === "print" && (
+                <button className="btn" type="button" onClick={() => frameRef.current?.contentWindow?.print()}>
+                  <Icon name="book" size={16} />印刷 / PDFで保存
+                </button>
+              )}
+              <a className="btn ghost" href={frame.src.replace("?embed=1", "")} target="_blank" rel="noopener noreferrer">新しいタブで開く</a>
+              <button className="btn ghost" type="button" onClick={() => setFrame(null)}>閉じる</button>
             </div>
           </div>
         </div>

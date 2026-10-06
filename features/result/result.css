@@ -266,3 +266,12 @@
 .rs-pop-lab { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; color: var(--ink, #2b3a46); margin-bottom: 8px; }
 .rs-pop-btns { display: flex; gap: 8px; }
 .rs-pop-btns .btn { flex: 1; }
+
+/* クチコミPOP モーダル（お客様結果画面：タブを増やさず完成形を表示） */
+.rs-fmodal { position: fixed; inset: 0; z-index: 1000; background: rgba(15,30,45,.6); display: flex; align-items: center; justify-content: center; padding: 14px; }
+.rs-fmodal-in { background: #fff; border-radius: 14px; width: min(680px, 100%); height: min(92vh, 100%); display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,.35); }
+.rs-fmodal-head { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-bottom: 1px solid var(--line,#e3e9ef); }
+.rs-fmodal-title { font-size: 13.5px; font-weight: 800; color: var(--ink,#2b3a46); flex: 1; }
+.rs-fmodal-x { border: none; background: #f0f3f6; width: 32px; height: 32px; border-radius: 8px; font-size: 15px; cursor: pointer; color: var(--ink,#2b3a46); flex: 0 0 auto; }
+.rs-fmodal-frame { flex: 1; width: 100%; border: 0; background: #fff; }
+.rs-fmodal-foot { display: flex; gap: 8px; justify-content: flex-end; padding: 10px 14px; border-top: 1px solid var(--line,#e3e9ef); }

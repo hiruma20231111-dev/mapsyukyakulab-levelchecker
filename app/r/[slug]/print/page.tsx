@@ -13,7 +13,15 @@ function formatDate(ts: number): string {
   return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
 }
 
-export default async function PrintPage({ params }: { params: { slug: string } }) {
+export default async function PrintPage({
+  params,
+  searchParams,
+}: {
+  params: { slug: string };
+  searchParams: { embed?: string };
+}) {
+  // モーダル(iframe)に埋め込むときは自動印刷を抑止し、モーダル側のボタンから印刷させる。
+  const embed = searchParams?.embed === "1";
   const lead = await getLeadBySlug(params.slug);
   if (!lead) {
     return (
@@ -41,7 +49,7 @@ export default async function PrintPage({ params }: { params: { slug: string } }
   }
   return (
     <main className="app">
-      <AutoPrint />
+      <AutoPrint auto={!embed} />
       <PrintReport data={data} dateStr={formatDate(lead.createdAt)} lineUrl={lineUrl} lineQr={lineQr} />
     </main>
   );

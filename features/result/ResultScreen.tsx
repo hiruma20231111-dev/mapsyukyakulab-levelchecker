@@ -210,6 +210,7 @@ export function ResultScreen({
   popReady?: boolean;
 }) {
   const [open, setOpen] = useState<CategoryView | null>(null);
+  const [popFrame, setPopFrame] = useState<string | null>(null);
   const [num, setNum] = useState(0);
   const [orbOff, setOrbOff] = useState(ORB_CIRC);
   const [today, setToday] = useState("");
@@ -339,12 +340,12 @@ export function ResultScreen({
             <div className="rs-pop">
               <div className="rs-pop-lab"><Icon name="chat" size={14} />クチコミ収集POP（印刷してお店に置けます）</div>
               <div className="rs-pop-btns">
-                <a className="btn ghost" href={`/r/${slug}/pop/ja/preview`} target="_blank" rel="noopener noreferrer">
+                <button type="button" className="btn ghost" onClick={() => setPopFrame(`/r/${slug}/pop/ja/preview`)}>
                   <Icon name="book" size={15} />日本語版を見る
-                </a>
-                <a className="btn ghost" href={`/r/${slug}/pop/en/preview`} target="_blank" rel="noopener noreferrer">
+                </button>
+                <button type="button" className="btn ghost" onClick={() => setPopFrame(`/r/${slug}/pop/en/preview`)}>
                   <Icon name="book" size={15} />English
-                </a>
+                </button>
               </div>
             </div>
           ) : null}
@@ -353,6 +354,21 @@ export function ResultScreen({
       )}
 
       <DetailSheet cat={open} onClose={() => setOpen(null)} />
+
+      {popFrame && (
+        <div className="rs-fmodal" onClick={() => setPopFrame(null)}>
+          <div className="rs-fmodal-in" onClick={(e) => e.stopPropagation()}>
+            <div className="rs-fmodal-head">
+              <span className="rs-fmodal-title">クチコミ収集POP</span>
+              <button className="rs-fmodal-x" onClick={() => setPopFrame(null)} aria-label="閉じる" type="button">✕</button>
+            </div>
+            <iframe className="rs-fmodal-frame" src={popFrame} title="クチコミ収集POP" />
+            <div className="rs-fmodal-foot">
+              <button className="btn ghost" type="button" onClick={() => setPopFrame(null)}>閉じる</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
