@@ -96,6 +96,7 @@ export function SalesDashboard({
   }
 
   const monthCount = useMemo(() => countIssuedInMonth(leads, ym), [leads, ym]);
+  const preCount = useMemo(() => leads.filter((l) => l.status === "pre").length, [leads]);
   const rate = useMemo(() => trialRate(leads), [leads]);
   const goalPct = monthGoal > 0 ? Math.min(100, Math.round((monthCount / monthGoal) * 100)) : 0;
 
@@ -150,6 +151,7 @@ export function SalesDashboard({
           <div className="sd-card-num">{monthCount}<small>件 / 目標 {monthGoal}件</small></div>
           <div className="sd-goal"><span style={{ width: `${goalPct}%` }} /></div>
           <div className="sd-goal-pct">{goalPct}% 達成</div>
+          <div className="sd-card-sub">訪問前 {preCount}件</div>
         </div>
         <div className="sd-card">
           <div className="sd-card-lab">トライアル実施率</div>
