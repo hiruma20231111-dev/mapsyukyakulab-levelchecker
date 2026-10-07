@@ -100,6 +100,66 @@ export function SalesDashboard({
   const rate = useMemo(() => trialRate(leads), [leads]);
   const goalPct = monthGoal > 0 ? Math.min(100, Math.round((monthCount / monthGoal) * 100)) : 0;
 
+  // 一覧の表示モード：すべて / 訪問前 / 発行日（カレンダー）
+  const [view, setView] = useState<"all" | "pre" | "date">("all");
+  const [calYM, setCalYM] = useState<{ y: number; m: number }>(() => {
+    const d = new Date();
+    return { y: d.getFullYear(), m: d.getMonth() };
+  });
+  const [selDay, setSelDay] = useState<string>("");
+
+  // 日付（YYYY-MM-DD）ごとの発行件数。
+  const dayCounts = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const l of leads) {
+      const k = dayKeyOf(l.createdAt);
+      map.set(k, (map.get(k) || 0) + 1);
+    }
+    return map;
+  }, [leads]);
+
+  // 表示モードに応じて絞り込んだ一覧。
+  const filtered = useMemo(() => {
+    if (view === "pre") return leads.filter((l) => l.status === "pre");
+    if (view === "date") return selDay ? leads.filter((l) => dayKeyOf(l.createdAt) === selDay) : [];
+    return leads;
+  }, [leads, view, selDay]);
+
+  // 「発行日から見る」を開いたとき、未選択なら直近の発行日を自動選択してその月を表示。
+  function openDateView() {
+    setView("date");
+    if (!selDay) {
+      const keys = [...dayCounts.keys()].sort();
+      const latest = keys[keys.length - 1];
+      if (latest) {
+        setSelDay(latest);
+        const [y, m] = latest.split("-").map(Number);
+        setCalYM({ y, m: m - 1 });
+      }
+    }
+  }
+
+  function shiftMonth(delta: number) {
+    setCalYM((c) => {
+      const d = new Date(c.y, c.m + delta, 1);
+      return { y: d.getFullYear(), m: d.getMonth() };
+    });
+  }
+
+  // カレンダーの日セル（先頭の空白＋1〜末日）。
+  const calCells = useMemo(() => {
+    const firstDow = new Date(calYM.y, calYM.m, 1).getDay();
+    const daysInMonth = new Date(calYM.y, calYM.m + 1, 0).getDate();
+    const cells: (number | null)[] = [];
+    for (let i = 0; i < firstDow; i++) cells.push(null);
+    for (let d = 1; d <= daysInMonth; d++) cells.push(d);
+    return cells;
+  }, [calYM]);
+
+  function cellKey(d: number): string {
+    return `${calYM.y}-${String(calYM.m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+  }
+
   async function changeStatus(id: string, status: LeadStatus) {
     setBusy(id);
     const prev = leads;
@@ -175,12 +235,73 @@ export function SalesDashboard({
         <Icon name="spark" size={18} />{DIAGNOSIS_ENABLED ? "新規診断を発行する" : "新規発行（クチコミPOP）"}
       </a>
 
-      <div className="sd-list-h">{DIAGNOSIS_ENABLED ? "診断一覧" : "発行一覧"}（{leads.length}件）</div>
+      {leads.length > 0 && (
+        <div className="sd-viewsw">
+          <button type="button" className={`sd-viewbtn ${view === "date" ? "on" : ""}`} onClick={openDateView}>
+            <Icon name="book" size={15} />発行日から見る
+          </button>
+          <button type="button" className={`sd-viewbtn ${view === "pre" ? "on" : ""}`} onClick={() => setView("pre")}>
+            <Icon name="pin" size={15} />訪問前（{preCount}）
+          </button>
+          <button type="button" className={`sd-viewbtn ${view === "all" ? "on" : ""}`} onClick={() => setView("all")}>
+            <Icon name="list" size={15} />すべて（{leads.length}）
+          </button>
+        </div>
+      )}
+
+      {leads.length > 0 && view === "date" && (
+        <div className="sd-cal">
+          <div className="sd-cal-head">
+            <button type="button" className="sd-cal-nav" onClick={() => shiftMonth(-1)} aria-label="前の月">‹</button>
+            <span className="sd-cal-title">{calYM.y}年{calYM.m + 1}月</span>
+            <button type="button" className="sd-cal-nav" onClick={() => shiftMonth(1)} aria-label="次の月">›</button>
+          </div>
+          <div className="sd-cal-grid">
+            {["日", "月", "火", "水", "木", "金", "土"].map((w) => (
+              <div key={w} className="sd-cal-dow">{w}</div>
+            ))}
+            {calCells.map((d, i) => {
+              if (d === null) return <div key={`b${i}`} className="sd-cal-day empty" />;
+              const key = cellKey(d);
+              const n = dayCounts.get(key) || 0;
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  className={`sd-cal-day ${n > 0 ? "has" : "none"} ${selDay === key ? "on" : ""}`}
+                  onClick={() => n > 0 && setSelDay(key)}
+                  disabled={n === 0}
+                >
+                  <span className="sd-cal-d">{d}</span>
+                  {n > 0 && <span className="sd-cal-badge">{n}</span>}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      <div className="sd-list-h">
+        {view === "pre"
+          ? "訪問前の店舗"
+          : view === "date"
+            ? (selDay ? `${fmtDayKey(selDay)}の発行` : "発行日を選んでください")
+            : (DIAGNOSIS_ENABLED ? "診断一覧" : "発行一覧")}
+        （{filtered.length}件）
+      </div>
       {leads.length === 0 ? (
         <div className="sd-empty">まだ発行がありません。<br />「{DIAGNOSIS_ENABLED ? "新規診断を発行する" : "新規発行"}」から始めましょう。</div>
+      ) : filtered.length === 0 ? (
+        <div className="sd-empty">
+          {view === "pre"
+            ? "訪問前の店舗はありません。"
+            : view === "date"
+              ? (selDay ? "この日の発行はありません。" : "上のカレンダーから日付をタップしてください。")
+              : "該当する店舗がありません。"}
+        </div>
       ) : (
         <div className="sd-list">
-          {leads.map((l) => (
+          {filtered.map((l) => (
             <div className="sd-lead" key={l.id}>
               <div className="sd-lead-top">
                 <div className="sd-lead-name">
@@ -341,4 +462,17 @@ export function SalesDashboard({
 function fmtDate(ts: number): string {
   const d = new Date(ts);
   return `${d.getMonth() + 1}/${d.getDate()}`;
+}
+
+/** タイムスタンプ → ローカル日付キー（YYYY-MM-DD）。発行日の絞り込み・集計に使う。 */
+function dayKeyOf(ts: number): string {
+  const d = new Date(ts);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+/** 日付キー（YYYY-MM-DD）→「M/D（曜）」表示。 */
+function fmtDayKey(key: string): string {
+  const [y, m, d] = key.split("-").map(Number);
+  const dow = ["日", "月", "火", "水", "木", "金", "土"][new Date(y, m - 1, d).getDay()];
+  return `${m}/${d}（${dow}）`;
 }
