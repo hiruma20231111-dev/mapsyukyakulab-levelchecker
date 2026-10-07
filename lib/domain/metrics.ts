@@ -13,7 +13,7 @@ export function countIssuedInMonth(leads: Lead[], ym: string): number {
 
 /** ステータス別の件数。 */
 export function statusBreakdown(leads: Lead[]): Record<LeadStatus, number> {
-  const out = { pre: 0, considering: 0, trial: 0, won: 0, lost: 0 } as Record<LeadStatus, number>;
+  const out = { pre: 0, visited: 0, considering: 0, trial: 0, won: 0, lost: 0 } as Record<LeadStatus, number>;
   for (const l of leads) out[l.status] = (out[l.status] || 0) + 1;
   return out;
 }

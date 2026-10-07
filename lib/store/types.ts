@@ -3,10 +3,11 @@ import type { V3Answers, Rank } from "@/lib/domain/score";
 import type { CategoryKey } from "@/content/diagnosis-v3";
 
 /** リード（診断を発行した店舗＝追客対象）のステータス。発行直後は「訪問前」。 */
-export type LeadStatus = "pre" | "considering" | "trial" | "won" | "lost";
+export type LeadStatus = "pre" | "visited" | "considering" | "trial" | "won" | "lost";
 
 export const STATUS_LABEL: Record<LeadStatus, string> = {
   pre: "訪問前",
+  visited: "訪問済",
   considering: "検討",
   trial: "トライアル導入",
   won: "本契約",
@@ -14,11 +15,12 @@ export const STATUS_LABEL: Record<LeadStatus, string> = {
 };
 
 /** ステータス選択の並び順（UI用）。 */
-export const STATUS_ORDER: LeadStatus[] = ["pre", "considering", "trial", "won", "lost"];
+export const STATUS_ORDER: LeadStatus[] = ["pre", "visited", "considering", "trial", "won", "lost"];
 
 /** ステータスごとの色トークン（design/tokens に対応）。 */
 export const STATUS_COLOR: Record<LeadStatus, string> = {
   pre: "#8a97a3",       // グレー：未着手
+  visited: "#5f7a9b",   // スレートブルー：訪問済
   considering: "#4285f4", // 青：検討中
   trial: "#f4b400",     // 黄：トライアル
   won: "#0f9d58",       // 緑：本契約

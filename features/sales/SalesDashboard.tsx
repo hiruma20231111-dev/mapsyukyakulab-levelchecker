@@ -12,7 +12,7 @@ import { countIssuedInMonth, trialRate } from "@/lib/domain/metrics";
 
 /** 訪問後に営業が回答するGoogleフォーム。 */
 const VISIT_FORM_URL =
-  "https://docs.google.com/forms/d/e/1FAIpQLSffZz5ZNT6XBM65T9tjJIM5b3ki5x7U56HHSgYPPgqiGCi5bg/viewform";
+  "https://docs.google.com/forms/d/e/1FAIpQLScLNjPvvgX2NHnsB2RMUKWU-IwTOrM4RM6ThSK_GhxwpAVCxg/viewform";
 
 /** 診断（回答）が1つでも入っているか。Place IDのみ先行発行した店舗は false。 */
 function hasDiagnosis(l: Lead): boolean {
@@ -42,6 +42,7 @@ export function SalesDashboard({
   const [pidDraft, setPidDraft] = useState<Record<string, string>>({});
   const [pidMsg, setPidMsg] = useState<string>("");
   const [copiedAddr, setCopiedAddr] = useState<string>("");
+  const [copiedName, setCopiedName] = useState<string>("");
 
   async function copyAddr(l: Lead) {
     if (!l.address) return;
@@ -49,6 +50,15 @@ export function SalesDashboard({
       await navigator.clipboard.writeText(l.address);
       setCopiedAddr(l.id);
       setTimeout(() => setCopiedAddr(""), 1600);
+    } catch { /* noop */ }
+  }
+
+  async function copyName(l: Lead) {
+    if (!l.storeName) return;
+    try {
+      await navigator.clipboard.writeText(l.storeName);
+      setCopiedName(l.id);
+      setTimeout(() => setCopiedName(""), 1600);
     } catch { /* noop */ }
   }
   // iframeモーダル（結果確認 / 診断PDF / クチコミPOP をタブを増やさずその場で表示）
@@ -173,12 +183,19 @@ export function SalesDashboard({
               <div className="sd-lead-top">
                 <div className="sd-lead-name">
                   {l.storeName}
-                  <a className="sd-visit" href={VISIT_FORM_URL} target="_blank" rel="noopener noreferrer">訪問後に回答</a>
+                  <button className="sd-visit" type="button" onClick={() => copyName(l)}>
+                    <Icon name={copiedName === l.id ? "check" : "link"} size={12} />
+                    {copiedName === l.id ? "コピーしました" : "店名をコピー"}
+                  </button>
                 </div>
                 {DIAGNOSIS_ENABLED && (hasDiagnosis(l)
                   ? <span className="sd-score" title="発行時のスコア">{l.total}<small>点</small></span>
                   : <span className="sd-undiag">未診断</span>)}
               </div>
+
+              <a className="sd-visit-big" href={VISIT_FORM_URL} target="_blank" rel="noopener noreferrer">
+                <Icon name="list" size={16} />訪問後に回答
+              </a>
               <div className="sd-lead-meta">
                 {DIAGNOSIS_ENABLED && (hasDiagnosis(l)
                   ? <span className={`sd-rank r-${l.rank}`}>{l.rank}ランク</span>
